@@ -15,9 +15,9 @@ path = '/Users/mattwittbrodt/Desktop/angina/';
 wb = spm_vol('/Volumes/Seagate Expansion Drive/DARPA/darpa_roi/wholeBrain.nii');
 wb_img = spm_read_vols(wb);
 
-% Average Pre-processing #
-avg = spm_vol([path,'con_0003.img']);
-avg_img = spm_read_vols(avg);
+% Average Pre-processing - (contrast with average activations)
+avg = spm_vol([path,'con_0003.img']); %load in image
+avg_img = spm_read_vols(avg); 
 avg_img(isnan(avg_img)) = 0;
 avg_img(wb_img == 0) = 0;
 avg_img(avg_img < 1.6) = 0;
