@@ -61,56 +61,30 @@ matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.c = cell2mat(regressor_d
 matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
 matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
 
-%% Step 3: Adding covariates (i.e., what you want to regress against)
+%% Step 4: Adding covariates (nuscience variables)
 
 % Getting number of covariates and creating an empty array for values
-cov_number = length(measure_col);
-cov_data = cell(length(subject_data),cov_number);
-
-% Looping through covariates and placing into array
-for sub = 1:length(subject_data)
-    
-    s = subject_data{sub};
-    row_num = find(subjects == str2num(s));
-    
-    % getting the covariates and placing into the covariate structure
-    cov = [];
-    if cov_number == 1
-        cov = subjects(row_num, 1+length(cov_number));
-        cov_data(sub, 1) = num2cell(cov);
-    else
-        final_col = 1+cov_number;
-        cov = subjects(row_num, 2:final_col);
-        cov_data(sub, 1:length(cov)) = num2cell(cov);
-    end
-
-end
-
-%% Step 4: Placing covariates into the batch
-for covs = 1:cov_number
-    
-
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-% Getting subject data by ID row with subject data
-[ii,~] = find(physiol == str2num(subjects{kk})); % gets [row,colum] for subject
-value = physiol(ii, measure_col);
-    
-    % Do a check to see if data is there. If not, skip subject.
-    if isempty(value) == 0
-        physiological_data{kk} = value;
-          
-    end
-end
+% cov_number = length(measure_col);
+% cov_data = cell(length(subject_data),cov_number);
+% 
+% % Looping through covariates and placing into array
+% for sub = 1:length(subject_data)
+%     
+%     s = subject_data{sub};
+%     row_num = find(subjects == str2num(s));
+%     
+%     % getting the covariates and placing into the covariate structure
+%     cov = [];
+%     if cov_number == 1
+%         cov = subjects(row_num, 1+length(cov_number));
+%         cov_data(sub, 1) = num2cell(cov);
+%     else
+%         final_col = 1+cov_number;
+%         cov = subjects(row_num, 2:final_col);
+%         cov_data(sub, 1:length(cov)) = num2cell(cov);
+%     end
+% 
+% end
 
 % Get files
 skipped_subj = 0; %for row numbering 
@@ -126,15 +100,7 @@ for kk = 1:length(subjects)
     % Do a check to see if data is there. If not, skip subject.
     if isempty(value) == 0
         physiological_data{kk} = value;
-     
-        % Activation during trauma scripts deal with con_0001 (from first level),
-        % deactivation is the con_0002 images
-        %if strcmp(analysis_type,'activation')      
-        %    contrast = 'con_0001.img';
-        %else
-        %    contrast = 'con_0002.img';
-        %end
-           
+       
         % Retrieving file
         contrast = 'con_0001.img'; % only activation for now
         file = [subject_dir,s,'\',contrast];
