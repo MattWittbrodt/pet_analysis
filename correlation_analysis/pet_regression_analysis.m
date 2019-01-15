@@ -37,8 +37,38 @@ for sub = 1:length(subject_data)
     scan_data{sub} = file;
 end
 
+%% Step 3: Adding covariates (i.e., what you want to regress against)
+
+% Getting number of covariates and creating an empty array for values
+cov_number = length(measure_col);
+cov_data = cell(length(subject_data),cov_number);
+
+% Looping through covariates and placing into array
+for sub = 1:length(subject_data)
+    
+    s = subject_data{sub};
+    row_num = find(subjects == str2num(s));
+    
+    % getting the covariates
+    cov = [];
+    if length(cov_number) == 1
+        cov = subjects(row_num, 1+length(cov_number));
+    else
+        final_col = 1+cov_number;
+        cov = subjects(row_num, 2:final_col);
+    end
+    
+    % putting them into the covariate structure
+    cov_data(sub, 2:1+length(cov)) = cov;
+end
     
     
+    
+    
+    
+    
+    
+
     
     
     
