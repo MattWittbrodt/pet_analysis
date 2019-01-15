@@ -1,18 +1,69 @@
 % Information on variables:
 % subjects = file with all of the subject groupings and covariates of
 % interst
-%
+% contrast_type = character with either 'activation' or 'deactivation'
 
-function matlabbatch = pet_regression_analysis(subject_file, outcome_file, measure_col, output_dir, data_dir)
+function matlabbatch = pet_regression_analysis(subject_file, outcome_dir, measure_col, output_dir, data_dir, contrast_type)
 
-%% Batch 1 - Setting up design
+%% Step 1: Reading in Subject Groupings and Files
+subjects = xlsread(subject_file);
 
-% Identify directory for files
-matlabbatch{1}.spm.stats.factorial_design.dir = {measure_dir};
+% Getting list of subjects
+subject_data = dir(data_dir);
+subject_data(1:2) = []; % Removing first two rows
+subject_data = {subject_data.name}.'; %.' fills vertically
 
-% Load in scans, create array with the actual scan file paths
-% Scans should take form of one / subject
-scan_data = cell(length(subjects),1); % Open array to place files in
+%% Step 2: Getting Design Elements (first batch run)
+
+% Identify ouptput directory for .SPM
+matlabbatch{1}.spm.stats.factorial_design.dir = {output_dir};
+
+% Create array with file paths of scan (1 row per subject) and place into
+% scans batch script
+scan_data = cell(length(subject_data),1); % Open array to place files in
+
+for sub = 1:length(subject_data)
+    
+    % Get subject #
+    s = subject_data{sub};
+    
+    % Retrieving file
+    if contrast_type == 'activation'
+        contrast = 'con_0001.img'; % 001 = activation
+    else contrast = 'con_002.img'; % 002 = deactivation
+    end
+    
+    file = [data_dir,'/',s,'/',contrast];
+    scan_data{sub} = file;
+end
+
+    
+    
+    
+    
+    
+    
+    % Getting subject data by ID row with subject data
+    [ii,~] = find(physiol == str2num(subjects{kk})); % gets [row,colum] for subject
+    value = physiol(ii, measure_col);
+    
+    % Do a check to see if data is there. If not, skip subject.
+    if isempty(value) == 0
+        physiological_data{kk} = value;
+     
+        % Activation during trauma scripts deal with con_0001 (from first level),
+        % deactivation is the con_0002 images
+        %if strcmp(analysis_type,'activation')      
+        %    contrast = 'con_0001.img';
+        %else
+        %    contrast = 'con_0002.img';
+        %end
+          
+    end
+end
+
+
+
 physiological_data = cell(length(subjects),1);
 
 % Get files
