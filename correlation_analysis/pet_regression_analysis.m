@@ -1,4 +1,9 @@
-function matlabbatch = regression_analysis_darpa2(subjects, physiol, measure_col, measure_dir, subject_dir)
+% Information on variables:
+% subjects = file with all of the subject groupings and covariates of
+% interst
+%
+
+function matlabbatch = pet_regression_analysis(subject_file, outcome_file, measure_col, output_dir, data_dir)
 
 %% Batch 1 - Setting up design
 
