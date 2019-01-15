@@ -2,8 +2,9 @@
 % subjects = file with all of the subject groupings and covariates of
 % interst
 % contrast_type = character with either 'activation' or 'deactivation'
+% data_dir = brain activation network
 
-function matlabbatch = pet_regression_analysis(subject_file, outcome_dir, measure_col, output_dir, data_dir, contrast_type)
+function matlabbatch = pet_regression_analysis(subject_file, regressor_file, regressor_col, measure_col, output_dir, data_dir, contrast_type)
 
 %% Step 1: Reading in Subject Groupings and Files
 subjects = xlsread(subject_file);
@@ -37,6 +38,29 @@ for sub = 1:length(subject_data)
     scan_data{sub} = file;
 end
 
+%% Step 3: Adding data to regression against (called covariate in SPM)
+regressor = xls_read(regressor_file);
+
+regressor_data = cell(length(subject_data),1); % Open array to place files in
+
+% Looping through regressor data and placing into array
+for sub = 1:length(subject_data)
+    
+    s = subject_data{sub};
+    row_num = find(subjects == str2num(s));
+    
+    % getting the regressor and placing into the covariate structure
+    reg = [];
+    reg = cell2mat(regressor(row_num, regressor_col));
+    regressor_data(sub,1) = num2cell(reg);
+
+end
+
+% Place into regression array
+matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.c = cell2mat(regressor_data);
+matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
+matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
+
 %% Step 3: Adding covariates (i.e., what you want to regress against)
 
 % Getting number of covariates and creating an empty array for values
@@ -61,7 +85,11 @@ for sub = 1:length(subject_data)
     end
 
 end
+
+%% Step 4: Placing covariates into the batch
+for covs = 1:cov_number
     
+
     
     
     
@@ -73,28 +101,16 @@ end
     
     
     
-    % Getting subject data by ID row with subject data
-    [ii,~] = find(physiol == str2num(subjects{kk})); % gets [row,colum] for subject
-    value = physiol(ii, measure_col);
+% Getting subject data by ID row with subject data
+[ii,~] = find(physiol == str2num(subjects{kk})); % gets [row,colum] for subject
+value = physiol(ii, measure_col);
     
     % Do a check to see if data is there. If not, skip subject.
     if isempty(value) == 0
         physiological_data{kk} = value;
-     
-        % Activation during trauma scripts deal with con_0001 (from first level),
-        % deactivation is the con_0002 images
-        %if strcmp(analysis_type,'activation')      
-        %    contrast = 'con_0001.img';
-        %else
-        %    contrast = 'con_0002.img';
-        %end
           
     end
 end
-
-
-
-physiological_data = cell(length(subjects),1);
 
 % Get files
 skipped_subj = 0; %for row numbering 
