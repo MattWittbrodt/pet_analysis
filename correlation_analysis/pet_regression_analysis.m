@@ -49,17 +49,17 @@ for sub = 1:length(subject_data)
     s = subject_data{sub};
     row_num = find(subjects == str2num(s));
     
-    % getting the covariates
+    % getting the covariates and placing into the covariate structure
     cov = [];
-    if length(cov_number) == 1
+    if cov_number == 1
         cov = subjects(row_num, 1+length(cov_number));
+        cov_data(sub, 1) = num2cell(cov);
     else
         final_col = 1+cov_number;
         cov = subjects(row_num, 2:final_col);
+        cov_data(sub, 1:length(cov)) = num2cell(cov);
     end
-    
-    % putting them into the covariate structure
-    cov_data(sub, 2:1+length(cov)) = cov;
+
 end
     
     
