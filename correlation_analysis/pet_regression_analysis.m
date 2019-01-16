@@ -169,23 +169,23 @@ matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 %% Batch 3 - Contrast
 
 % Keeping dependency from estimated model
-% matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep;
-% matlabbatch{3}.spm.stats.con.spmmat(1).tname = 'Select SPM.mat';
-% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).name = 'filter';
-% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).value = 'mat';
-% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).name = 'strtype';
-% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).value = 'e';
-% matlabbatch{3}.spm.stats.con.spmmat(1).sname = 'Model estimation: SPM.mat File';
-% matlabbatch{3}.spm.stats.con.spmmat(1).src_exbranch = substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1});
-% matlabbatch{3}.spm.stats.con.spmmat(1).src_output = substruct('.','spmmat');
-% 
-% % Creating contrasts - only 1 (positive) given the contrast image leading
-% % into it. If entering covariates into scan data, will appear before
-% % study-wide covariate
-% matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'positive';
-% matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 1];
-% matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-% matlabbatch{3}.spm.stats.con.delete = 0;
+matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep;
+matlabbatch{3}.spm.stats.con.spmmat(1).tname = 'Select SPM.mat';
+matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).name = 'filter';
+matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).value = 'mat';
+matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).name = 'strtype';
+matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).value = 'e';
+matlabbatch{3}.spm.stats.con.spmmat(1).sname = 'Model estimation: SPM.mat File';
+matlabbatch{3}.spm.stats.con.spmmat(1).src_exbranch = substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1});
+matlabbatch{3}.spm.stats.con.spmmat(1).src_output = substruct('.','spmmat');
+ 
+% Creating contrasts - only 1 (positive) given the contrast image leading
+% into it. If entering covariates into scan data, will appear before
+% study-wide covariate
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'positive';
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 1];
+matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+matlabbatch{3}.spm.stats.con.delete = 0;
 
 % else
 %     matlabbatch = [];
