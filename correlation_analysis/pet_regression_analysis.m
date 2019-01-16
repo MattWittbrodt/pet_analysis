@@ -4,10 +4,10 @@
 % contrast_type = character with either 'activation' or 'deactivation'
 % data_dir = brain activation network
 
-function matlabbatch = pet_regression_analysis(subject_file, regressor_file, regressor_col, output_dir, data_dir, contrast_type)
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, contrast_type)
 
 %% Step 1: Reading in Subject Groupings and Files
-subjects = xlsread(subject_file);
+%subjects = xlsread(subject_file);
 
 % Getting list of subjects
 subject_data = dir(data_dir);
@@ -34,12 +34,15 @@ for sub = 1:length(subject_data)
     else contrast = 'con_002.img'; % 002 = deactivation
     end
     
-    file = [data_dir,'/',s,'/',contrast];
+    file = [data_dir,'/',s,'/',contrast,',1'];
     scan_data{sub} = file;
 end
 
+% Adding into batch file
+matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
+
 %% Step 3: Adding data to regression against (called covariate in SPM)
-regressor = xls_read(regressor_file);
+regressor = xlsread(regressor_file);
 
 regressor_data = cell(length(subject_data),1); % Open array to place files in
 
@@ -47,11 +50,11 @@ regressor_data = cell(length(subject_data),1); % Open array to place files in
 for sub = 1:length(subject_data)
     
     s = subject_data{sub};
-    row_num = find(subjects == str2num(s));
+    row_num = find(regressor == str2num(s));
     
     % getting the regressor and placing into the covariate structure
     reg = [];
-    reg = cell2mat(regressor(row_num, regressor_col));
+    reg = regressor(row_num, regressor_col);
     regressor_data(sub,1) = num2cell(reg);
 
 end
@@ -166,23 +169,23 @@ matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 %% Batch 3 - Contrast
 
 % Keeping dependency from estimated model
-matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep;
-matlabbatch{3}.spm.stats.con.spmmat(1).tname = 'Select SPM.mat';
-matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).name = 'filter';
-matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).value = 'mat';
-matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).name = 'strtype';
-matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).value = 'e';
-matlabbatch{3}.spm.stats.con.spmmat(1).sname = 'Model estimation: SPM.mat File';
-matlabbatch{3}.spm.stats.con.spmmat(1).src_exbranch = substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1});
-matlabbatch{3}.spm.stats.con.spmmat(1).src_output = substruct('.','spmmat');
-
-% Creating contrasts - only 1 (positive) given the contrast image leading
-% into it. If entering covariates into scan data, will appear before
-% study-wide covariate
-matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'positive';
-matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 1];
-matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-matlabbatch{3}.spm.stats.con.delete = 0;
+% matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep;
+% matlabbatch{3}.spm.stats.con.spmmat(1).tname = 'Select SPM.mat';
+% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).name = 'filter';
+% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).value = 'mat';
+% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).name = 'strtype';
+% matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).value = 'e';
+% matlabbatch{3}.spm.stats.con.spmmat(1).sname = 'Model estimation: SPM.mat File';
+% matlabbatch{3}.spm.stats.con.spmmat(1).src_exbranch = substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1});
+% matlabbatch{3}.spm.stats.con.spmmat(1).src_output = substruct('.','spmmat');
+% 
+% % Creating contrasts - only 1 (positive) given the contrast image leading
+% % into it. If entering covariates into scan data, will appear before
+% % study-wide covariate
+% matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = 'positive';
+% matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [0 1];
+% matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+% matlabbatch{3}.spm.stats.con.delete = 0;
 
 % else
 %     matlabbatch = [];
