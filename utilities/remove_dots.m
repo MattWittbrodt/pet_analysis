@@ -7,7 +7,7 @@ function removed = remove_dots(x)
 
     for ii = 1:length(x)
         % find if the name starts with a period
-        if sum(strfind(x(ii).name,".")) >= 1
+        if sum(strfind(x(ii).name(1),".")) == 1
            to_remove = [to_remove, ii];
         end
     end
