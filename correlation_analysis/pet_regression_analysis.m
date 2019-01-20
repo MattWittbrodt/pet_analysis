@@ -42,7 +42,12 @@ end
 matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
 
 %% Step 3: Adding data to regression against (called covariate in SPM)
-regressor = xlsread(regressor_file);
+regressor = '';
+
+if contains(regressor_file, ".csv")
+    regressor = csvread(regressor_file);
+else
+    regressor = xlsread(regressor_file);
 
 regressor_data = cell(length(subject_data),1); % Open array to place files in
 
