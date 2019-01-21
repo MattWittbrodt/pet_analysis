@@ -14,6 +14,39 @@ subject_data = dir(data_dir);
 subject_data(1:2) = []; % Removing first two rows
 subject_data = {subject_data.name}.'; %.' fills vertically
 
+%% Step 2: Read in regressor and then cross reference with subject files
+regressor = xlsread(regressor_file);
+
+% Remove missing NaN
+regressor = rmmissing(regressor(:,[1,regressor_col]));
+
+% Running equivalency check - removing subjects without regressor data
+remove_subjects = [];
+for ii = 1:length(subject_data)
+    s = cell2mat(subject_data(ii));
+    if isempty(find(regressor(:,1) == str2num(s)))
+        remove_subjects = [remove_subjects,ii];
+    end
+end
+
+subject_data(remove_subjects) = [];
+
+% Looping through regressor data and placing into array
+regressor_data = cell(length(subject_data),1); % Open array to place files in
+for sub = 1:length(subject_data)
+    
+    s = subject_data{sub};
+    row_num = find(regressor == str2num(s));
+    
+    % getting the regressor and placing into the covariate structure
+    reg = [];
+    reg = regressor(row_num, 2);
+    regressor_data(sub,1) = num2cell(reg);
+
+end
+
+
+
 %% Step 2: Getting Design Elements (first batch run)
 
 % Identify ouptput directory for .SPM
@@ -42,26 +75,6 @@ end
 matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
 
 %% Step 3: Adding data to regression against (called covariate in SPM)
-regressor = xlsread(regressor_file);
-
-% Remove missing NaN
-regressor = rmmissing(regressor(:,[1,regressor_col]));
-
-
-regressor_data = cell(length(subject_data),1); % Open array to place files in
-
-% Looping through regressor data and placing into array
-for sub = 1:length(subject_data)
-    
-    s = subject_data{sub};
-    row_num = find(regressor == str2num(s));
-    
-    % getting the regressor and placing into the covariate structure
-    reg = [];
-    reg = regressor(row_num, regressor_col);
-    regressor_data(sub,1) = num2cell(reg);
-
-end
 
 % Place into regression array
 matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov.c = cell2mat(regressor_data);
