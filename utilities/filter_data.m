@@ -1,10 +1,10 @@
 % All subjects = file (dataset) with all subjects and conditions to
 % subset
-% '~/DARPA/script_files/subject_groupings.xlsx'
+% test = '~/DARPA/script_files/subject_groupings.xlsx';
 % subset_col = which column(s) are to be subsetted; 
-% subset_value = what the subset is equal to
+% names = cell array of the names of the subset columns ex: {'ptsd','sham'}
 
-function filtered_data = filter_data(all_subjects, subset_col, subset_value)
+function filtered_data = filter_data(all_subjects, subset_col, names)
     
     % read file
     d = xlsread(all_subjects);
@@ -30,20 +30,54 @@ function filtered_data = filter_data(all_subjects, subset_col, subset_value)
         combinations = [];
     end
     
-    % 
+    % Creating a structure and filling it with dataframes
+    % Column 1 = names, 2 = data
+    s = cell(combinations,2);
+    
+    % Loop once for overall data, twice for other data
+    for ii = 1:2
         
-    
-    
-    
-    
+        %Empty dataframe
+        subset_data = [];
         
-    
-    % Making a local copy of data
-    d = all_subjects;
-    
-    % Using indexing, completing the subset
-    filtered_data = d(d(:,subset_col) == subset_value,:);
-    
-    %return(filtered_data);
+        % all data
+        if ii == 1
+            s{1,2} = d;
+            s{1,1} = 'all';
+        
+        else
+        
+            % Doing the first column first
+            for jj=1:length(subset_col)
 
+                % Finding what column & getting max of that column
+                c = subset_col(jj);
+                mx = max(d(:,c));
+                mn = min(d(:,c));
+                levels = [mn:mx];
+
+                % Lopping through all options from max-min
+                for kk=1:length(levels)
+                    subset_value = levels(kk);
+
+                    % Subset dataframe and placing name into structure
+                    index = jj+kk;
+                    
+                    % Finding where to put the data - there may be some
+                    % overlap the way its coded (could improve)
+                    if ~isempty(s{index,2})
+                        index = index + 1;
+                    end
+                    
+                    subset_data = d(d(:,c) == subset_value,:);
+                    s{index,2} = subset_data;
+                    s{index,1} = [names{jj},'_',num2str(subset_value)];
+                end
+            end
+        end
+    end
+    
+    % Returning filtered_data
+    filtered_data = s;
+    
 end
