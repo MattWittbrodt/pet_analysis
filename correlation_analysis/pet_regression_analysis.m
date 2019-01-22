@@ -7,11 +7,6 @@
 
 function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list, contrast_type)
 
-if length(subj_list) <= 2
-    fprintf('Too few subjects, n = %s', length(subj_list))
-    matlabbatch = [];
-
-else
     
 %% Step 1: Reading in Subject Groupings and Files
 %subjects = xlsread(subject_file);
@@ -21,22 +16,29 @@ else
 %subject_data(1:2) = []; % Removing first two rows
 %subject_data = {subject_data.name}.'; %.' fills vertically
 
-    %% Step 2: Read in regressor and then cross reference with subject files
-    regressor = xlsread(regressor_file);
+%% Step 2: Read in regressor and then cross reference with subject files
+regressor = xlsread(regressor_file);
 
-    % Remove missing NaN
-    regressor = rmmissing(regressor(:,[1,regressor_col]));
+% Remove missing NaN
+regressor = rmmissing(regressor(:,[1,regressor_col]));
 
-    % Running equivalency check - removing subjects without regressor data
-    remove_subjects = [];
-    for ii = 1:length(subj_list)
-        s = subj_list(ii);
-        if isempty(find(regressor(:,1) == s))
-            remove_subjects = [remove_subjects,ii];
-        end
+% Running equivalency check - removing subjects without regressor data
+remove_subjects = [];
+for ii = 1:length(subj_list)
+    s = subj_list(ii);
+    if isempty(find(regressor(:,1) == s))
+        remove_subjects = [remove_subjects,ii];
     end
+end
 
-    subj_list(remove_subjects) = [];
+subj_list(remove_subjects) = [];
+
+% Running if statement not run analysis with too few data
+if length(subj_list) <= 2
+    fprintf('Too few subjects, n = %s', length(subj_list))
+    matlabbatch = [];
+
+else
 
     % Looping through regressor data and placing into array
     regressor_data = cell(length(subj_list),1); % Open array to place files in
