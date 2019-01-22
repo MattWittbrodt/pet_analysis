@@ -3,16 +3,17 @@
 % interst
 % contrast_type = character with either 'activation' or 'deactivation'
 % data_dir = brain activation network
+% subj_list = list of subjects to be included within the analysis
 
-function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, contrast_type)
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list, contrast_type)
 
 %% Step 1: Reading in Subject Groupings and Files
 %subjects = xlsread(subject_file);
 
 % Getting list of subjects
-subject_data = dir(data_dir);
-subject_data(1:2) = []; % Removing first two rows
-subject_data = {subject_data.name}.'; %.' fills vertically
+%subject_data = dir(data_dir);
+%subject_data(1:2) = []; % Removing first two rows
+%subject_data = {subject_data.name}.'; %.' fills vertically
 
 %% Step 2: Read in regressor and then cross reference with subject files
 regressor = xlsread(regressor_file);
@@ -22,21 +23,21 @@ regressor = rmmissing(regressor(:,[1,regressor_col]));
 
 % Running equivalency check - removing subjects without regressor data
 remove_subjects = [];
-for ii = 1:length(subject_data)
-    s = cell2mat(subject_data(ii));
-    if isempty(find(regressor(:,1) == str2num(s)))
+for ii = 1:length(subj_list)
+    s = subj_list(ii);
+    if isempty(find(regressor(:,1) == s))
         remove_subjects = [remove_subjects,ii];
     end
 end
 
-subject_data(remove_subjects) = [];
+subj_list(remove_subjects) = [];
 
 % Looping through regressor data and placing into array
-regressor_data = cell(length(subject_data),1); % Open array to place files in
-for sub = 1:length(subject_data)
+regressor_data = cell(length(subj_list),1); % Open array to place files in
+for sub = 1:length(subj_list)
     
-    s = subject_data{sub};
-    row_num = find(regressor == str2num(s));
+    s = subj_list(sub);
+    row_num = find(regressor == s);
     
     % getting the regressor and placing into the covariate structure
     reg = [];
@@ -54,12 +55,12 @@ matlabbatch{1}.spm.stats.factorial_design.dir = {output_dir};
 
 % Create array with file paths of scan (1 row per subject) and place into
 % scans batch script
-scan_data = cell(length(subject_data),1); % Open array to place files in
+scan_data = cell(length(subj_list),1); % Open array to place files in
 
-for sub = 1:length(subject_data)
+for sub = 1:length(subj_list)
     
     % Get subject #
-    s = subject_data{sub};
+    s = subj_list(sub);
     
     % Retrieving file
     if contrast_type == 'activation'
@@ -67,7 +68,7 @@ for sub = 1:length(subject_data)
     else contrast = 'con_002.img'; % 002 = deactivation
     end
     
-    file = [data_dir,'/',s,'/',contrast,',1'];
+    file = [data_dir,'/',num2str(s),'/',contrast,',1'];
     scan_data{sub} = file;
 end
 
