@@ -35,7 +35,7 @@ subj_list(remove_subjects) = [];
 
 % Running if statement not run analysis with too few data
 if length(subj_list) <= 2
-    fprintf('Too few subjects, n = %s', length(subj_list))
+    fprintf('Too few subjects, n = %d\n', length(subj_list))
     matlabbatch = [];
 
 else
