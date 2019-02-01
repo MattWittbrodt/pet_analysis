@@ -125,12 +125,6 @@ else
     matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
     matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
 
-    %%
-
-
-
-    % 
-
     %% Batch 2 - Model Estimation - Keeping Vanilla for now
     matlabbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep;
     matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tname = 'Select SPM.mat';
