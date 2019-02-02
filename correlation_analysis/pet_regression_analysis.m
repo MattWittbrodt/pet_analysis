@@ -5,6 +5,10 @@
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
 
+
+%%%%%% IN- directory = '~/DARPA/psychological_data/scales/Distress/all'
+%want = '~/DARPA/psychological_data/scales/Distress/all/activation'
+%want = '~/DARPA/psychological_data/scales/Distress/all/deactivation'
 function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list, contrast_type)
 
     
@@ -57,13 +61,23 @@ else
 
 
     %% Step 2: Getting Design Elements (first batch run)
-
-    % Identify ouptput directory for .SPM
-    matlabbatch{1}.spm.stats.factorial_design.dir = {output_dir};
-
-    % Create array with file paths of scan (1 row per subject) and place into
-    % scans batch script
-    scan_data = cell(length(subj_list),1); % Open array to place files in
+    
+    % Adding loop for activaiton and deactivation
+    for con = 1:2
+        
+        if con == 1
+            contrast = 'activation';
+        else
+            contrast = 'deactivation';
+        end
+        
+        % Identify ouptput directory for .SPM
+        matlabbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',contrast]};
+    
+        % adding output directory to be 
+        % Create array with file paths of scan (1 row per subject) and place into
+        % scans batch script
+        scan_data = cell(length(subj_list),1); % Open array to place files in
 
     for sub = 1:length(subj_list)
 
