@@ -32,6 +32,9 @@ function regression_data = regression_cluster_data(subject_data, mask_data, cont
         % Using index, read over subjects to get mean activation
         for jj = 1:length(sub)
             
+            % Addind subject number to array
+            regression_data(jj,1) = sub(jj);
+            
             % Getting file name, reading in, reading voxels
             sub_data = [subject_data,'/',num2str(sub(jj)),'/',contrast_name];
             sub_vol = spm_vol(sub_data);
