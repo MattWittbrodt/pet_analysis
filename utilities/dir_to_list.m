@@ -26,7 +26,7 @@ function list = dir_to_list(data_dir, output)
     else %meaning strcmp(output, "string") == T
         
         % Putting into a list
-        list = strings(5,1);
+        list = strings(length(d),1);
         
         for ii = 1:length(list)
             s = d(ii).name;
