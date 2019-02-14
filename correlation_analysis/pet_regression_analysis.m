@@ -38,7 +38,9 @@ subj_list(remove_subjects) = [];
 
 % Running if statement not run analysis with too few data
 if length(subj_list) <= 2
-    fprintf('Too few subjects, n = %d\n', length(subj_list))
+    too_few = fopen('~/Desktop/regression_errors.txt','w');
+    fprintf(too_few, '%s; Too few subjects, n = %d\n', regressor_file, length(subj_list));
+    fclose(too_few);
     matlabbatch = [];
 
 else
