@@ -5,11 +5,15 @@
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
 
+<<<<<<< HEAD
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list)
+=======
 
 %%%%%% IN- directory = '~/DARPA/psychological_data/scales/Distress/all'
 %want = '~/DARPA/psychological_data/scales/Distress/all/activation'
 %want = '~/DARPA/psychological_data/scales/Distress/all/deactivation'
 function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list, contrast_type)
+>>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
 
     
 %% Step 1: Reading in Subject Groupings and Files
@@ -61,6 +65,21 @@ else
 
 
     %% Step 2: Getting Design Elements (first batch run)
+<<<<<<< HEAD
+    for con = 1:2
+        
+        if con == 1
+            con_type = 'activation';
+        else
+            con_type = 'deactivation';
+        end
+
+        % Create array with file paths of scan (1 row per subject) and place into
+        % scans batch script
+        scan_data = cell(length(subj_list),1); % Open array to place files in
+
+        for sub = 1:length(subj_list)
+=======
     
     % Adding loop for activaiton and deactivation
     for con = 1:2
@@ -78,6 +97,7 @@ else
         % Create array with file paths of scan (1 row per subject) and place into
         % scans batch script
         scan_data = cell(length(subj_list),1); % Open array to place files in
+<<<<<<< HEAD
 
     for sub = 1:length(subj_list)
 
@@ -89,12 +109,100 @@ else
             contrast = 'con_0001.img'; % 001 = activation
         else
             contrast = 'con_002.img'; % 002 = deactivation
-        end
+=======
+>>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
 
-        file = [data_dir,'/',num2str(s),'/',contrast,',1'];
-        scan_data{sub} = file;
+            % Get subject #
+            s = subj_list(sub);
+
+            % Retrieving file
+            if strcmp(con_type,'activation')
+                contrast = 'con_0001_zeroed.img'; % 001 = activation
+                batch = 1;
+            else
+                contrast = 'con_0002_zeroed.img'; % 002 = deactivation
+                batch = 4;
+            end
+
+            file = [data_dir,'/',num2str(s),'/',contrast,',1'];
+            scan_data{sub} = file;
+>>>>>>> db56b592f3628f917532f7a4ff5231640b46630f
+        end
+        
+        % Identify ouptput directory for .SPM
+        matlabbatch{batch}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
+
+        % Adding into batch file
+        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.scans = scan_data;
+
+        %% Step 3: Adding data to regression against (called covariate in SPM)
+
+        % Place into regression array
+        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.c = cell2mat(regressor_data);
+        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
+        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
+
+        %% Step 4: Adding covariates (nuscience variables)
+
+        % Getting number of covariates and creating an empty array for values
+        % cov_number = length(measure_col);
+        % cov_data = cell(length(subject_data),cov_number);
+        % 
+        % % Looping through covariates and placing into array
+        % for sub = 1:length(subject_data)
+        %     
+        %     s = subject_data{sub};
+        %     row_num = find(subjects == str2num(s));
+        %     
+        %     % getting the covariates and placing into the covariate structure
+        %     cov = [];
+        %     if cov_number == 1
+        %         cov = subjects(row_num, 1+length(cov_number));
+        %         cov_data(sub, 1) = num2cell(cov);
+        %     else
+        %         final_col = 1+cov_number;
+        %         cov = subjects(row_num, 2:final_col);
+        %         cov_data(sub, 1:length(cov)) = num2cell(cov);
+        %     end
+        % 
+        % end
+
+        %% Adding other generic information into batch
+        matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+        matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
+        matlabbatch{batch}.spm.stats.factorial_design.masking.tm.tm_none = 1;
+        matlabbatch{batch}.spm.stats.factorial_design.masking.im = 1;
+        matlabbatch{batch}.spm.stats.factorial_design.masking.em = {''};
+        matlabbatch{batch}.spm.stats.factorial_design.globalc.g_omit = 1;
+        matlabbatch{batch}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
+        matlabbatch{batch}.spm.stats.factorial_design.globalm.glonorm = 1;
+
+        %% Batch 2 - Model Estimation - Keeping Vanilla for now
+        
+        matlabbatch{batch + 1}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+        matlabbatch{batch + 1}.spm.stats.fmri_est.write_residuals = 0;
+        matlabbatch{batch + 1}.spm.stats.fmri_est.method.Classical = 1;
+
+        %% Batch 3 - Contrast
+
+        % Keeping dependency from estimated model
+        matlabbatch{batch + 2}.spm.stats.con.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+
+        % Creating contrasts - only 1 (positive) given the contrast image leading
+        % into it. If entering covariates into scan data, will appear before
+        % study-wide covariate
+        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.name = 'positive';
+        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0 1];
+        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.name = 'negative';
+        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0 -1];
+        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
+        matlabbatch{batch+2}.spm.stats.con.delete = 0;
+
     end
 
+<<<<<<< HEAD
+=======
     % Adding into batch file
     matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
 
@@ -173,6 +281,7 @@ else
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{3}.spm.stats.con.delete = 0;
 
+>>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
 end
 
 end
