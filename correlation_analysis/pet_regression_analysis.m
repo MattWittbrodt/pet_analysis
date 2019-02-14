@@ -5,16 +5,11 @@
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
 
-<<<<<<< HEAD
 function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list)
-=======
 
 %%%%%% IN- directory = '~/DARPA/psychological_data/scales/Distress/all'
 %want = '~/DARPA/psychological_data/scales/Distress/all/activation'
 %want = '~/DARPA/psychological_data/scales/Distress/all/deactivation'
-function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list, contrast_type)
->>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
-
     
 %% Step 1: Reading in Subject Groupings and Files
 %subjects = xlsread(subject_file);
@@ -63,9 +58,7 @@ else
     end
 
 
-
     %% Step 2: Getting Design Elements (first batch run)
-<<<<<<< HEAD
     for con = 1:2
         
         if con == 1
@@ -79,7 +72,6 @@ else
         scan_data = cell(length(subj_list),1); % Open array to place files in
 
         for sub = 1:length(subj_list)
-=======
     
     % Adding loop for activaiton and deactivation
     for con = 1:2
@@ -97,7 +89,6 @@ else
         % Create array with file paths of scan (1 row per subject) and place into
         % scans batch script
         scan_data = cell(length(subj_list),1); % Open array to place files in
-<<<<<<< HEAD
 
     for sub = 1:length(subj_list)
 
@@ -108,9 +99,7 @@ else
         if contrast_type == 'activation'
             contrast = 'con_0001.img'; % 001 = activation
         else
-            contrast = 'con_002.img'; % 002 = deactivation
-=======
->>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
+            contrast = 'con_0002.img'; % 002 = deactivation
 
             % Get subject #
             s = subj_list(sub);
@@ -126,7 +115,6 @@ else
 
             file = [data_dir,'/',num2str(s),'/',contrast,',1'];
             scan_data{sub} = file;
->>>>>>> db56b592f3628f917532f7a4ff5231640b46630f
         end
         
         % Identify ouptput directory for .SPM
@@ -201,8 +189,6 @@ else
 
     end
 
-<<<<<<< HEAD
-=======
     % Adding into batch file
     matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
 
@@ -281,7 +267,6 @@ else
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     matlabbatch{3}.spm.stats.con.delete = 0;
 
->>>>>>> d4461d880196358b1d8ddee4d9f0c4e030c6287d
 end
 
 end
