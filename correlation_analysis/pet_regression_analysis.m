@@ -87,7 +87,8 @@ else
         % Retrieving file
         if contrast_type == 'activation'
             contrast = 'con_0001.img'; % 001 = activation
-        else contrast = 'con_002.img'; % 002 = deactivation
+        else
+            contrast = 'con_002.img'; % 002 = deactivation
         end
 
         file = [data_dir,'/',num2str(s),'/',contrast,',1'];
