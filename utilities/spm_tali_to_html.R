@@ -6,7 +6,7 @@
 # spm = location of a .csv from the SPM output 
 # name = character; descriptive name of contrast
 
-create_pet_table <- function(talairach,spm,name) {
+create_pet_table <- function(talairach = "~/Desktop/spm_to_tali.td.txt",spm = "~/Desktop/spm_to_tali.csv", name) {
   library(tidyverse)
   library(xtable)
   
