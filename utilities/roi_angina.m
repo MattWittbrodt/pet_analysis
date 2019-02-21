@@ -1,15 +1,15 @@
-% This is the function
-% 12/4
+% function to get voxel data - 2/20
+%Identify study and subjects directories
+%subj_files = '/Volumes/Seagate/angina/data/pet_data';
+%roi_files = '/Volumes/Seagate/ROIs';
+%clusters = '/Volumes/Seagate/angina/data/analysis/activation/angina_activation.img';
+%activity = string- activation
 
 function roi_values = roi_angina(roi_files, subj_files, clusters, activity)
-%Identify study and subjects directories
-%subj_files = 'G:\angina\data\pet_data\';
-%roi_files = 'G:\ROIs\';
-%clusters = 'G:\angina\data\analysis\activation\angina_activation.img';
 
 % Getting list of subjects
 subjects = dir(subj_files);
-subjects(1:2) = []; % Removing first two rows
+subjects = remove_dots(subjects);
 subjects = {subjects.name}.'; % Isolating into a cell array
 
 % Loading Atlas Files and getting the volume counts
@@ -25,7 +25,7 @@ roi_values = zeros(length(subjects),length(masks)+1); % +1 for subject
 % Placing Volume counts into the structure
 for ii=1:length(masks)
     
-    % Load ROI
+    % Load ROI (from AAL atlas)
     roi = spm_vol([masks(ii).folder,'\',masks(ii).name]);
     roi_img = spm_read_vols(roi);
     
@@ -82,7 +82,7 @@ for ii=1:length(subjects)
         contrast = 'con_0002.img';
     end
     
-    s = spm_vol([subj_files,num2str(subj),'\',contrast]);
+    s = spm_vol([subj_files,'/',num2str(subj),'/',contrast]);
     s_img = spm_read_vols(s);
     
     % Creating empy array for subject
@@ -102,7 +102,7 @@ for ii=1:length(subjects)
         
             for kk=1:length(masks(jj).vols_in_cluster)
                 if s_img(masks(jj).vols_in_cluster(kk)) >= 0
-                    mask_data(kk) = s_img(masks(jj).vols_in_cluster(kk));
+                   mask_data(kk) = s_img(masks(jj).vols_in_cluster(kk));
                 end
             end
             
