@@ -1,8 +1,8 @@
 %%%
 %%% Converting into table and exporting to comma deliminted .txt
-%%%
+%%% Results = structure from SPM; jar_path = path to .jar file
 
-function tali_table = tali_spm(results)
+function tali_table = spm_results_to_tali(results, jar_path)
     
     %% Getting data and adding X,Y, and Z columns
     data = results.dat;
@@ -73,6 +73,32 @@ function tali_table = tali_spm(results)
     names(2,length(names)-1) = {'Y_Tal'};
     names(2,length(names)) = {'Z_Tal'};
     
+    %% Get Taliarach Names from coordinates
+    % Open empty cell array
+    area = cell(nrow,1);
+    
+    % Get XYZ coordinates
+    for row = 1:nrow
+        
+        x = num2str(data2(row, 15));
+        y = num2str(data2(row, 16));
+        z = num2str(data2(row, 17));
+        
+        search_coords = [x,', ',y, ', ',z];
+        cmd = ['java -classpath ',jar_path, ' org.talairach.PointToTD 4, ',search_coords]; 
+        [s,w] = unix(cmd);
+    
+        % Cleaning up result to only return structure
+        ind = findstr(w, 'Returned:');
+        w1 = w(ind:end);
+        ind = findstr(w1, ':');
+        final_str = w1(ind+2:end-1);
+        
+        % Place into cell array
+        area(row) = {final_str};
+    end
+        
+    
     %% Opening file and writing data to it
     spm_results = fopen('~/Desktop/spm_tali.txt','w');
     
@@ -93,7 +119,15 @@ function tali_table = tali_spm(results)
             end
         end
         
-        fprintf(spm_results, '\n');
+        if ii <= 2
+            fprintf(spm_results, '\n');
+        
+        else
+            % add taliarach description
+            fprintf(spm_results, '%s', cell2char(area(ii-2)));
+            fprintf(spm_results, '\n');
+        end
+        
     
     end
     
@@ -113,9 +147,7 @@ function tali_table = tali_spm(results)
             end
         end
         
-        fprintf(tali_coords, '\n');
-        
+        fprintf(tali_coords, '\n');  
     end
 end
-
 
