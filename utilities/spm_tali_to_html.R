@@ -6,12 +6,13 @@
 # spm = location of a .csv from the SPM output 
 # name = character; descriptive name of contrast
 
-create_pet_table <- function(talairach = "~/Desktop/spm_to_tali.td.txt",spm = "~/Desktop/spm_to_tali.csv", name) {
+create_pet_table <- function(talairach = "~/Desktop/tali_coords.td.txt",spm = "~/Desktop/spm_tali.txt", name) {
   library(tidyverse)
   library(xtable)
   
   # Output from SPM
-  s <- read.csv(spm) %>%
+  s <- read.table(spm, sep = ',', header = T, skip = 1) %>%
+       .[,-ncol(.)] %>%
        select(equivk,X_Tal, Y_Tal, Z_Tal,equivZ) %>%
        filter(is.na(X_Tal) == F)
   
@@ -22,7 +23,6 @@ create_pet_table <- function(talairach = "~/Desktop/spm_to_tali.td.txt",spm = "~
               Brodmann_Area = str_replace(Level.5,"Brodmann area ",""),
               Area = paste(Level.1, Level.2, Level.3, sep = ", ")) %>%
        select(-Level.1, -Level.2, -Level.3,-Level.5)
-  
   
   df <- cbind(s,t) %>%
         select(equivk,Area,Brodmann_Area,X_Tal,Y_Tal,Z_Tal,equivZ)
