@@ -123,8 +123,13 @@ function spm_results_to_tali(results, output_name, jar_path)
         end
         
         if ii <= 2
-            fprintf(spm_results, '\n');
-        
+            
+            if ii == 2
+                fprintf(spm_results, ',,,,');
+                fprintf(spm_results, '\n');
+            else
+                fprintf(spm_results, '\n');
+            end
         else
             % add taliarach description
             fprintf(spm_results, '%s', cell2char(area(ii-2)));
