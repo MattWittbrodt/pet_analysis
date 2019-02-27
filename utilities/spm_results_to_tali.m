@@ -1,8 +1,11 @@
 %%%
 %%% Converting into table and exporting to comma deliminted .txt
 %%% Results = structure from SPM; jar_path = path to .jar file
+%%% output_name = string: location and name of output file (make sure to add .txt)
+%%% jar_path = where is the taliarach.jar file (string must include the
+%%% file
 
-function spm_results_to_tali(results, jar_path)
+function spm_results_to_tali(results, output_name, jar_path)
     
     %% Getting data and adding X,Y, and Z columns
     data = results.dat;
@@ -100,7 +103,7 @@ function spm_results_to_tali(results, jar_path)
         
     
     %% Opening file and writing data to it
-    spm_results = fopen('~/Desktop/spm_tali.txt','w');
+    spm_results = fopen(output_name,'w');
     
     for ii = 1:(nrow+2)
         
