@@ -2,7 +2,7 @@
 %%% Converting into table and exporting to comma deliminted .txt
 %%% Results = structure from SPM; jar_path = path to .jar file
 
-function tali_table = spm_results_to_tali(results, jar_path)
+function spm_results_to_tali(results, jar_path)
     
     %% Getting data and adding X,Y, and Z columns
     data = results.dat;
@@ -31,7 +31,7 @@ function tali_table = spm_results_to_tali(results, jar_path)
     
     % Adding coordinates
     data2 = [data2, coord];
-    [nrow, ncol] = size(data2);
+    [nrow, ~] = size(data2);
     
     %% Converting the XYZ to Taliarach
     tal_cols = [15,16,17];
@@ -86,12 +86,12 @@ function tali_table = spm_results_to_tali(results, jar_path)
         
         search_coords = [x,', ',y, ', ',z];
         cmd = ['java -classpath ',jar_path, ' org.talairach.PointToTD 4, ',search_coords]; 
-        [s,w] = unix(cmd);
+        [~,w] = unix(cmd);
     
         % Cleaning up result to only return structure
-        ind = findstr(w, 'Returned:');
+        ind = strfind(w, 'Returned:');
         w1 = w(ind:end);
-        ind = findstr(w1, ':');
+        ind = strfind(w1, ':');
         final_str = w1(ind+2:end-1);
         
         % Place into cell array
@@ -131,23 +131,5 @@ function tali_table = spm_results_to_tali(results, jar_path)
     
     end
     
-    %% Writing out a .txt file with only Talirach coordinates
-    tali_coords = fopen('~/Desktop/tali_coords.txt','w');
-    
-    for ii = 1:(nrow+1)
-        
-        for jj = 1:3
-            
-            if ii == 1
-                value = cell2char(names(2,jj+14));
-                fprintf(tali_coords, '%s,', value);
-            else
-                value = data2(ii-1, jj+14);
-                fprintf(tali_coords, '%d,', value);
-            end
-        end
-        
-        fprintf(tali_coords, '\n');  
-    end
 end
 
