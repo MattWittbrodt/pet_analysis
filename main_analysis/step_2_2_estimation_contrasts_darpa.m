@@ -1,4 +1,4 @@
-function matlabbatch = step_2_2_estimation_contrasts_darpa(subject_files, contrasts, analysis_type) %, analysis_type)
+function matlabbatch = step_2_2_estimation_contrasts_darpa(subject_files, contrasts, analysis_type)
     
     %% Estimating Model - Step 2 in the Analysis Pipeline
     % First step is to read in SPM file
