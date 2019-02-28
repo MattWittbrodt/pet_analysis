@@ -1,13 +1,16 @@
-function matlabbatch = step_2_2_estimation_contrasts_darpa(analysis_file, contrasts, analysis_type) %, analysis_type)
+function matlabbatch = step_2_2_estimation_contrasts_darpa(subject_files, contrasts, analysis_type) %, analysis_type)
     
     %% Estimating Model - Step 2 in the Analysis Pipeline
     % First step is to read in SPM file
-    matlabbatch{1}.spm.stats.fmri_est.spmmat = {[analysis_file,analysis_type,'\','SPM.mat']};
+    path = strsplit(subject_files, '/');
+    analysis_path = strjoin(path(1:length(path)-1),'/');
+    
+    matlabbatch{1}.spm.stats.fmri_est.spmmat = {[analysis_path,'/',analysis_type,'/','SPM.mat']};
     matlabbatch{1}.spm.stats.fmri_est.method.Classical = 1;
 
     %% Creating Contrasts - Step 3 in the Analysis Pipeline
     % Load in SPM.mat file
-    matlabbatch{2}.spm.stats.con.spmmat = {[analysis_file,analysis_type,'\','SPM.mat']};
+    matlabbatch{2}.spm.stats.con.spmmat = {[analysis_path,'/',analysis_type,'/','SPM.mat']};
 
     % Get number of rows in contrast file
     [nrow,ncol] = size(contrasts);
