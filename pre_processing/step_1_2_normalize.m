@@ -9,14 +9,14 @@ files = dir(fullfile(y,subject_search_string));
 file_array = cell(length(files),1); %Predifine cell array
 
 for i = 1:length(files)
-    file_array{i} = [files(i).folder,'\',files(i).name,',1'];
+    file_array{i} = [files(i).folder,'/',files(i).name,',1'];
 end
 
 %% Load in mean image from the realigning
 mean_file = dir(fullfile(y,'*.nii'));
 
 % Select source image - mean image from the Realign and Estimate Step
-matlabbatch{1}.spm.spatial.normalise.estwrite.subj.source = {[mean_file(1).folder,'\',mean_file(1).name,',1']};
+matlabbatch{1}.spm.spatial.normalise.estwrite.subj.source = {[mean_file(1).folder,'/',mean_file(1).name,',1']};
 matlabbatch{1}.spm.spatial.normalise.estwrite.subj.wtsrc = ''; % 0 files for source weighting
 
 % Select the images to write - the images which resulted from Step 2
