@@ -15,9 +15,10 @@ create_pet_table <- function(data = "~/Desktop/DARPA_regression/pep_active_vNS_a
        select(equivk,X_Tal, Y_Tal, Z_Tal,equivZ, X, X.1, X.2,X.4) %>%
        mutate(hemisphere = str_extract(X, "[RL]"),
               cerebellum_presence = str_detect(X, "Cerebellum"),
-              hemisphere_lobe = ifelse(cerebellum_presence == TRUE, paste(hemisphere, "Cerebellum", sep = " "),
-                                       ifelse(str_detect(X.1, "Sub-lobar"), paste(hemisphere, X.4, sep = " ") ,
-                                                         paste(hemisphere, X.1, sep = " "))),
+              hemisphere_lobe = ifelse(ce rebellum_presence == TRUE, paste(hemisphere, "Cerebellum", sep = " "),
+                                       ifelse(str_detect(X.1, "Sub-lobar") & str_detect(X.4, "[:punct:]"), paste(hemisphere, X.2, sep = " "),
+                                                         ifelse(str_detect(X.1, "Sub-lobar") & !str_detect(X.4, "[:punct:]"), paste(hemisphere, X.2, sep = " "),
+                                                                paste(hemisphere, X.1, sep = " ")))),
               Brodmann_Area = str_replace_all(X.4, "[^[:digit:]]",""),
               Area = ifelse(cerebellum_presence == T | str_detect(X.1, "Sub-lobar"), hemisphere_lobe,
                             paste(hemisphere_lobe, X.2, sep = ", "))) %>%
