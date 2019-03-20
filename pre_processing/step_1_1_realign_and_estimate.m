@@ -1,7 +1,6 @@
 function matlabbatch = step_1_1_realign_and_estimate(x,y)
-% Step 2 - Realign, Estimate, and Write
 
-% First - create cell array with files
+%% First - create cell array with files
 subject_search_string = ['*',x,'*.img'];
 files = dir(fullfile(y,subject_search_string));
 
@@ -11,14 +10,12 @@ for i = 1:length(files)
     file_array{i} = [files(i).folder,'\',files(i).name,',1'];
 end
 
-% ------------------------------
-% Mean image export
-% ------------------------------
+%% Mean image export
 
-%% Load in raw files (not previously corrected)
+% Load in raw files (not previously corrected)
 matlabbatch{1}.spm.util.imcalc.input = file_array;
                         
-%% Name output file and directory (z argument)
+% Name output file and directory (z argument)
 matlabbatch{1}.spm.util.imcalc.output = [x,'_realign_summed.nii'];
 matlabbatch{1}.spm.util.imcalc.outdir = {y};
  
@@ -37,7 +34,7 @@ end
 
 expression = [expression,')/',num2str(length(files))];
 
-% Enter expression into cell array
+%% Enter expression into cell array
 matlabbatch{1}.spm.util.imcalc.expression = expression;
  
 % Options are kept at default
