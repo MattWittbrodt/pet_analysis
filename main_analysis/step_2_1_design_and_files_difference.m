@@ -7,26 +7,30 @@
 function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors)
     
     %% Getting list of subjects with groupings and scan data
-    
-    
-    % Reading in data about subject groupings, then getting appropriate group
-    group_data = xlsread([analysis_files,'subject_groupings.xlsx'],'Sheet1');
-    
+    % Removing NaN's from data
+    subject_groupings(any(isnan(subject_groupings), 2), :) = [];
+
     % Routine to remove subjects in groupings file but no scans
     rows_to_delete = [];
     
-    for ii = 1:length(group_data)
-        s = num2str(group_data(ii));
-
-            % Check if subject is in the analysis, if not, skip
-            check_if_subject = find(strcmp(subjects, s), 1);
-            if isempty(check_if_subject) == 1
-                rows_to_delete = [rows_to_delete; ii];
-            end
-    end
+%     % Reading in data about subject groupings, then getting appropriate group
+%     group_data = xlsread([analysis_files,'subject_groupings.xlsx'],'Sheet1');
+    
+   for ii = 1:length(subject_groupings)
+       
+       s = num2str(subject_groupings(ii));
+ 
+       % Check if subject in grouping data has PET data. If not, skip
+       check_if_subject = find(strcmp(subjects, s), 1);
+       
+       if isempty(check_if_subject) == 1
+          rows_to_delete = [rows_to_delete; ii];
+       end
+       
+   end
     
     % Removing rows
-    group_data(rows_to_delete,:) = [];
+    subject_groupings(rows_to_delete,:) = [];
     
     % --------------------------------------------------------------------
     % Second, looping over the types of analyses (activation, 
