@@ -52,7 +52,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
        if lev == 1
           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans1 = contrast_scans;
        else
-           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans2 = contrast_scans;
+          matlabbatch{1}.spm.stats.factorial_design.des.t2.scans2 = contrast_scans;
        end
    end
    
@@ -71,9 +71,9 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2;    
            
     %% Completing batch file
-    
+    matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};
 %     % STEP 1: Factorial Design Specification
-%     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};
+%     
 %     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = measure_name;
 %     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.dept = 1; % dependence
 %     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = 1; %Unequal
