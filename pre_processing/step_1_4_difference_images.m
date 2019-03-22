@@ -15,17 +15,61 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     end
     
     %% Creating condition array for scans
+%     condition_array = [];
+% 
+%     for yy = 1:length(file_array)
+%         scan_name = file_array{yy};
+%         scan_index = str2num(cell2mat(extractBetween(file_array(yy),"_w","_")));
+%         condition_array(yy,1) = scan_characteristics(scan_index,2);
+%     end
     
-    % Creating condition array for scans
-    condition_array = [];
-
-    for yy = 1:length(file_array)
-        scan_name = file_array{yy};
-        scan_index = str2num(cell2mat(extractBetween(file_array(yy),"_w","_")));
-        condition_array(yy,1) = scan_characteristics(scan_index,2);
-    end
+    % Getting levels of scan type
+    levels = unique(scan_characteristics(:,2));
+    levels = transpose(levels);
     
+    % Loop over scans and place into cell array
     
+   for lev = 1:length(levels)
+       
+       cur_level = levels(lev);
+       
+       % Getting the scans applying to the factor
+       only_scans = scan_characteristics(scan_characteristics(:,2) == cur_level,:);
+       [scan_n, ~] = size(only_scans);
+       
+       % Creating Cell
+       contrast_scans = strings(scan_n,1);
+       
+       % Adding scans
+       for ii = 1:length(contrast_scans)
+           contrast_scans(ii) = scans(ii).name;
+       end
+       
+       % Converting to Cell string
+       contrast_scans = cellstr(contrast_scans);
+       
+       % Placing into array
+       if lev == 1
+          matlabbatch{1}.spm.stats.factorial_design.des.t2.scans1 = contrast_scans;
+       else
+           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans2 = contrast_scans;
+       end
+   end
+   
+   % Other aspects
+   matlabbatch{1}.spm.stats.factorial_design.des.t2.dept = 1;
+   matlabbatch{1}.spm.stats.factorial_design.des.t2.variance = 1;
+   matlabbatch{1}.spm.stats.factorial_design.des.t2.gmsca = 1;
+   matlabbatch{1}.spm.stats.factorial_design.des.t2.ancova = 0;
+   matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+   matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
+   matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
+   matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
+   matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
+   matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
+   matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50;
+   matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2;    
+           
     %% Completing batch file
     
     % STEP 1: Factorial Design Specification
@@ -47,15 +91,8 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2; % Using proportional normalization
     
     %% Model Estimation - this is pretty vanilla
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep; % Using the depedency feature
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tname = 'Select SPM.mat';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tgt_spec{1}(1).name = 'filter';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tgt_spec{1}(1).value = 'mat';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tgt_spec{1}(2).name = 'strtype';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).tgt_spec{1}(2).value = 'e';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).sname = 'Factorial design specification: SPM.mat File';
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).src_exbranch = substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1});
-    matlabbatch{2}.spm.stats.fmri_est.spmmat(1).src_output = substruct('.','spmmat');
+    matlabbatch{2}.spm.stats.fmri_est.spmmat = {[subj_dir,'SPM.mat']};
+    matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
     matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 
     %% Creating contrasts estimation
