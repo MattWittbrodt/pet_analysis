@@ -58,7 +58,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
    
    % Other aspects
    matlabbatch{1}.spm.stats.factorial_design.des.t2.dept = 1;
-   matlabbatch{1}.spm.stats.factorial_design.des.t2.variance = 1;
+   matlabbatch{1}.spm.stats.factorial_design.des.t2.variance = 0;
    matlabbatch{1}.spm.stats.factorial_design.des.t2.gmsca = 1;
    matlabbatch{1}.spm.stats.factorial_design.des.t2.ancova = 0;
    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
