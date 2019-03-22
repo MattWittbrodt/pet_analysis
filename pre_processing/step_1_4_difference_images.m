@@ -66,7 +66,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
    matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
-   matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
+   matlabbatch{1}.spm.stats.factorial_design.globalc.g_mean = 1;
    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50;
    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2;    
            
