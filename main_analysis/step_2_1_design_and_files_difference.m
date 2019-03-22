@@ -37,7 +37,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     for jj = 1:length(all_data)
         
         % Getting subject
-        s = cell2char(subjects(jj));
+        s = cell2char(all_data(jj,1));
         
         % Getting contrast
         if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
