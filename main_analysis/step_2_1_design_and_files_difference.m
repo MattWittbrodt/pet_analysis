@@ -75,14 +75,14 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     % Placing subjects into design
     for s = 1:length(all_data)
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = cell2char(all_data(s,1)); 
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = cellstr(cell2char(all_data(s,1))); 
         
         % Looping over grouping factors
         conds = zeros(1,length(factors));
         
         for fac = 1:length(factors)
             factor_col = fac + 1;
-            conds(fac) = cell2mat(all_data(s,factor_col));
+            conds(fac) = cell2mat(all_data(s,factor_col))+1;
         end
 
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = conds; 
