@@ -41,9 +41,9 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         % Getting contrast
         if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
-                contrast = 'con_0001.img';
+                contrast = 'con_0001.nii';
         else
-                contrast = 'con_0002.img';
+                contrast = 'con_0002.nii';
         end
         
         % Retrieving file
