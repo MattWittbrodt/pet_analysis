@@ -72,23 +72,23 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
            
     %% Completing batch file
     
-    % STEP 1: Factorial Design Specification
-    matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = measure_name;
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.dept = 1; % dependence
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = 1; %Unequal
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.gmsca = 1; %Include grand mean scaling
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.ancova = 0; %No ANCOVA
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject.scans = file_array;
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject.conds = condition_array;
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1; %For the main effect
-    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariance
-    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; %No threshold masking
-    matlabbatch{1}.spm.stats.factorial_design.masking.im = 1; %Yes for implicit mask
-    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''}; % No explicit mask
-    matlabbatch{1}.spm.stats.factorial_design.globalc.g_mean = 1; % Yes for grand mean scaling
-    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50; % using 50 as the value
-    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2; % Using proportional normalization
+%     % STEP 1: Factorial Design Specification
+%     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = measure_name;
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.dept = 1; % dependence
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = 1; %Unequal
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.gmsca = 1; %Include grand mean scaling
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.ancova = 0; %No ANCOVA
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject.scans = file_array;
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject.conds = condition_array;
+%     matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1; %For the main effect
+%     matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariance
+%     matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; %No threshold masking
+%     matlabbatch{1}.spm.stats.factorial_design.masking.im = 1; %Yes for implicit mask
+%     matlabbatch{1}.spm.stats.factorial_design.masking.em = {''}; % No explicit mask
+%     matlabbatch{1}.spm.stats.factorial_design.globalc.g_mean = 1; % Yes for grand mean scaling
+%     matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50; % using 50 as the value
+%     matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2; % Using proportional normalization
     
     %% Model Estimation - this is pretty vanilla
     matlabbatch{2}.spm.stats.fmri_est.spmmat = {[subj_dir,'SPM.mat']};
@@ -96,15 +96,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 
     %% Creating contrasts estimation
-    matlabbatch{3}.spm.stats.con.spmmat(1) = cfg_dep; % Again, using dependency feature for the model estimation .mat
-    matlabbatch{3}.spm.stats.con.spmmat(1).tname = 'Select SPM.mat';
-    matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).name = 'filter';
-    matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(1).value = 'mat';
-    matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).name = 'strtype';
-    matlabbatch{3}.spm.stats.con.spmmat(1).tgt_spec{1}(2).value = 'e';
-    matlabbatch{3}.spm.stats.con.spmmat(1).sname = 'Model estimation: SPM.mat File';
-    matlabbatch{3}.spm.stats.con.spmmat(1).src_exbranch = substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1});
-    matlabbatch{3}.spm.stats.con.spmmat(1).src_output = substruct('.','spmmat');
+    matlabbatch{3}.spm.stats.con.spmmat = {[subj_dir,'SPM.mat']};
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = [measure_name, '_activation']; % First contrast is the activation (stress > control)
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [-1 1];
     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
