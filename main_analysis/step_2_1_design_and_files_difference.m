@@ -32,45 +32,118 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Removing rows
     subject_groupings(rows_to_delete,:) = [];
     
-    % --------------------------------------------------------------------
-    % Second, looping over the types of analyses (activation, 
-    % deactivation, etc) & creating the designs
-    % --------------------------------------------------------------------
-    ptsd = cell(length(group_data(group_data(:,2) == 1)),1);
-    non_ptsd = cell(length(group_data(group_data(:,2) == 2)),1);
-           
-    for jj = 1:2 %1 = PTSD, 2 = No_PTSD
-
-        % Creating subset for each condition with subject IDs
-        d = group_data(group_data(:,2) == jj);
-
-        % Get files
-        for kk = 1:length(d)
-            s = num2str(d(kk)); % get subject #
-
-            % Activation during trauma scripts deal with con_0001 (from first level),
-            % deactivation is the con_0002 images
-            if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
+    %% Second - looping over analysis_type (activation, deactivation, etc)
+    % Building large array with subject names and the factors
+    all_data = num2cell(subject_groupings);
+    
+    % Looping over subjects to get scan data   
+    for jj = 1:length(all_data)
+        
+        % Getting subject
+        s = cell2char(subjects(jj));
+        
+        % Getting contrast
+        if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
                 contrast = 'con_0001.img';
-            else
+        else
                 contrast = 'con_0002.img';
-            end
-           
-            % Retrieving file
-            file = [subject_dir,s,'\', contrast];
-            if jj == 1
-                ptsd{kk} = [file,',1'];
-            else
-                non_ptsd{kk} = [file,',1'];
-            end
         end
-    end
+        
+        % Retrieving file
+        file = [subject_files,'/',s,'/', contrast,',1'];
+        
+        % Placing into cell array
+        all_data{jj,1} = file;
+    end      
+        % Placing file in cell array
+        
+%         if jj == 1
+%            ptsd{kk} = [file,',1'];
+%         else
+%            non_ptsd{kk} = [file,',1'];
+%         end
+    
+    
+%     ptsd = cell(length(group_data(group_data(:,2) == 1)),1);
+%     non_ptsd = cell(length(group_data(group_data(:,2) == 2)),1);
+           
+%     for jj = 1:2 %1 = PTSD, 2 = No_PTSD
+% 
+%         % Creating subset for each condition with subject IDs
+%         d = group_data(group_data(:,2) == jj);
+% 
+%         % Get files
+%         for kk = 1:length(d)
+%             s = num2str(d(kk)); % get subject #
+% 
+%             % Activation during trauma scripts deal with con_0001 (from first level),
+%             % deactivation is the con_0002 images
+% %             if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
+% %                 contrast = 'con_0001.img';
+% %             else
+% %                 contrast = 'con_0002.img';
+% %             end
+%            
+%             % Retrieving file
+%             file = [subject_dir,s,'\', contrast,',1'];
+%             if jj == 1
+%                 ptsd{kk} = [file,',1'];
+%             else
+%                 non_ptsd{kk} = [file,',1'];
+%             end
+%         end
+%     end
 
             
     %% Setting Up Flexible Factorial Design
        
     % Identifying correct directory
-    matlabbatch{1}.spm.stats.factorial_design.dir = {[analysis_files,analysis_type]};
+    analysis_dir = '';
+    s_files = strsplit(subject_files,'/');
+    for l = 2:length(s_files)-1
+        analysis_dir = [analysis_dir,'/',cell2char(s_files(l))];
+    end
+    
+    matlabbatch{1}.spm.stats.factorial_design.dir = {[analysis_dir,'/',analysis_type]};
+    
+    % Placing Factors into array
+    for fac = 1:length(factors)
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = cell2char(factors(fac)); 
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).variance = 1; 
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).gmsca = 0; 
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).ancova = 0; 
+    end
+    
+    % Placing subjects into design
+    for s = 1:length(all_data)
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = cell2char(all_data(s,1)); 
+        
+        % Looping over grouping factors
+        conds = zeros(1,length(factors));
+        
+        for fac = 1:length(factors)
+            factor_col = fac + 1;
+            conds(fac) = cell2mat(all_data(s,factor_col));
+        end
+
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = conds; 
+        
+    end
+    
+    % Identifying Interaction
+    inter = zeros(1,length(factors));
+    for int = 1:length(inter)
+        inter(int) = int;
+    end
+    
+    matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
+    
+    
+    
+    
+    
+    
     
     % Need to change analysis - act/deactivation using Flexible Factorial, 
     % using 2 factors - PTSD and Sham / Active VNS
@@ -102,23 +175,22 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(i).conds = conds;     
             
         end
+%         
+%         % First factor is PTSD status
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).name = 'ptsd';
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).dept = 0;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).variance = 1;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).gmsca = 0;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).ancova = 0;
+%         
+%         % Second factor is VNS
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).name = 'VNS';
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).dept = 0;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).variance = 1;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).gmsca = 0;
+%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).ancova = 0;
         
-        % First factor is PTSD status
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).name = 'ptsd';
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).dept = 0;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).variance = 1;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).gmsca = 0;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).ancova = 0;
         
-        % Second factor is VNS
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).name = 'VNS';
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).dept = 0;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).variance = 1;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).gmsca = 0;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).ancova = 0;
-        
-        % Identifying Interaction
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = [1 2];
         
     %end
         
