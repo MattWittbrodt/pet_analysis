@@ -139,11 +139,20 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
     
+    % No covariate (for now)
+    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariate
+    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; % Relative threshold masking with value of 0.8
     
+    % No masking
+    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
+    matlabbatch{1}.spm.stats.factorial_design.masking.im = 0;
+    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
     
-    
-    
-    
+    % Becuase this is already in t-values, do not need to normalize
+    matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
+    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
+    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
+
     
     % Need to change analysis - act/deactivation using Flexible Factorial, 
     % using 2 factors - PTSD and Sham / Active VNS
@@ -175,36 +184,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(i).conds = conds;     
             
         end
-%         
-%         % First factor is PTSD status
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).name = 'ptsd';
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).dept = 0;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).variance = 1;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).gmsca = 0;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(1).ancova = 0;
-%         
-%         % Second factor is VNS
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).name = 'VNS';
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).dept = 0;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).variance = 1;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).gmsca = 0;
-%         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(2).ancova = 0;
         
-        
-        
-    %end
-        
-    % No covariate (for now)
-    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariate
-    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; % Relative threshold masking with value of 0.8
 
-    matlabbatch{1}.spm.stats.factorial_design.masking.im = 1; % No omplicit mask
-    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''}; % No for explicit
-
-    matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1; % Use global mean
-    %matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50; % global mean scaling @ 50
-    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
-
-    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1; % no normalization
     
 end
