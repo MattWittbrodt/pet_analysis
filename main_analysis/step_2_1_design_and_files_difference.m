@@ -47,7 +47,9 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         end
         
         % Zeroing out data
+        tic
         zeroing_image([subject_files,'/',s,'/', contrast], '/Volumes/Seagate/DARPA/darpa_roi/wholeBrain.nii');
+        toc
         
         % Retrieving file
         file = [subject_files,'/',s,'/', contrast,',1'];
