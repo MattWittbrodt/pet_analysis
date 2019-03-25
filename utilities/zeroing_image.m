@@ -3,41 +3,36 @@
 
 function zeroing_image(file, whole_brain)
 
-% Read image file
+%% Read image file and getting voxel values, size, and creating output space
 img = spm_vol(file);
 
-% Get 3d array of voxels
+% Get 3d array of voxels and activity (> 0)
 img_vol = spm_read_vols(img);
-brain_activity = find(img_vol ~= 0);
+[x,y,z] = size(img_vol);
+brain_activity = find(img_vol > 0);
 
-% % Read in Whole Brain File and get location of brain
-% wb = spm_vol(whole_brain);
-% wb_vol = spm_read_vols(wb);
-% wb_location = find(wb_vol == 1);
+% Creating new output
+new_activation = zeros(x,y,z);
 
-% Remove negative values and values outside of brain
+%% Loop over areas with activity to make sure in brain
+
 for ii = 1:length(brain_activity)
     
+    % Getting voxel #
     voxel = brain_activity(ii);
     
-    % see if in the brain- if so, make sure positive
-    %in_brain = find(wb_location == voxel);
-    
+    % see if in the brain- if it is, put into new activation
     if ~isempty(find(whole_brain == voxel,1))
         
-        % Making negative values 0
-        if img_vol(ii) < 0
-           img_vol(ii) = 0;
-        end
-    else
-        % Removing non-brain areas
-        img_vol(ii) = 0;
+        % Non brain areas = 0
+        new_activation(voxel) = img_vol(voxel);
+
     end
    
 end
 
-% write out image
-spm_write_vol(img,img_vol);
+%% write out image
+spm_write_vol(img,new_activation);
 
 
 end

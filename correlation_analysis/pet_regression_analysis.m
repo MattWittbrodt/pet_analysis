@@ -4,8 +4,9 @@
 % contrast_type = character with either 'activation' or 'deactivation'
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
+% cov_col = column in excel file with column for covariate - if none, empty
  
-function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list)
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, cov_col, output_dir, data_dir, subj_list)
  
     
 %% Step 1: Reading in Subject Groupings and Files
@@ -17,10 +18,10 @@ function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, ou
 %subject_data = {subject_data.name}.'; %.' fills vertically
  
 %% Step 2: Read in regressor and then cross reference with subject files
-regressor = xlsread(regressor_file);
+regressor_excel = xlsread(regressor_file);
  
 % Remove missing NaN
-regressor = rmmissing(regressor(:,[1,regressor_col]));
+regressor = rmmissing(regressor_excel(:,[1,regressor_col,cov_col]));
  
 % Running equivalency check - removing subjects without regressor data
 remove_subjects = [];
@@ -42,18 +43,31 @@ if length(subj_list) <= 2
  
 else
  
-    % Looping through regressor data and placing into array
+    % Looping through regressor data and covariate and placing into array
     regressor_data = cell(length(subj_list),1); % Open array to place files in
+    
+    % Checking if covariate has been specified
+    if ~(isempty(cov_col))
+        cov_data = cell(length(subj_list),1); % Open array to place files in
+    else
+        cov_data = [];
+    end
+    
     for sub = 1:length(subj_list)
  
         s = subj_list(sub);
         row_num = find(regressor == s);
  
         % getting the regressor and placing into the covariate structure
-        reg = [];
         reg = regressor(row_num, 2);
         regressor_data(sub,1) = num2cell(reg);
- 
+        
+        % adding covariate if specified
+        if ~(isempty(cov_data))
+            cov = regressor(row_num,3);
+            cov_data(sub,1) = num2cell(cov);
+        end
+        
     end
  
  
@@ -78,10 +92,10 @@ else
  
             % Retrieving file
             if strcmp(con_type,'activation')
-                contrast = 'con_0001_zeroed.img'; % 001 = activation
+                contrast = 'con_0001.img'; % 001 = activation
                 batch = 1;
             else
-                contrast = 'con_0002_zeroed.img'; % 002 = deactivation
+                contrast = 'con_0002.img'; % 002 = deactivation
                 batch = 4;
             end
  
@@ -102,34 +116,18 @@ else
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
  
-        %% Step 4: Adding covariates (nuscience variables)
- 
-        % Getting number of covariates and creating an empty array for values
-        % cov_number = length(measure_col);
-        % cov_data = cell(length(subject_data),cov_number);
-        % 
-        % % Looping through covariates and placing into array
-        % for sub = 1:length(subject_data)
-        %     
-        %     s = subject_data{sub};
-        %     row_num = find(subjects == str2num(s));
-        %     
-        %     % getting the covariates and placing into the covariate structure
-        %     cov = [];
-        %     if cov_number == 1
-        %         cov = subjects(row_num, 1+length(cov_number));
-        %         cov_data(sub, 1) = num2cell(cov);
-        %     else
-        %         final_col = 1+cov_number;
-        %         cov = subjects(row_num, 2:final_col);
-        %         cov_data(sub, 1:length(cov)) = num2cell(cov);
-        %     end
-        % 
-        % end
+        %% Step 4: Adding covariates (nuiscence variables)
+        if ~(isempty(cov_data))
+            matlabbatch{batch}.spm.stats.factorial_design.cov.c = cell2mat(cov_data);
+            matlabbatch{batch}.spm.stats.factorial_design.cov.cname = 'covariate';
+            matlabbatch{batch}.spm.stats.factorial_design.cov.iCFI = 1;
+            matlabbatch{batch}.spm.stats.factorial_design.cov.iCC = 1;
+        else
+            matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+            matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
+        end
  
         %% Adding other generic information into batch
-        matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
-        matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{batch}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.im = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.em = {''};
