@@ -4,8 +4,9 @@
 % contrast_type = character with either 'activation' or 'deactivation'
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
+% cov_col = column in excel file with column for covariate - if none, empty
  
-function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, output_dir, data_dir, subj_list)
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, cov_col, output_dir, data_dir, subj_list)
  
     
 %% Step 1: Reading in Subject Groupings and Files
@@ -42,8 +43,16 @@ if length(subj_list) <= 2
  
 else
  
-    % Looping through regressor data and placing into array
+    % Looping through regressor data and covariate and placing into array
     regressor_data = cell(length(subj_list),1); % Open array to place files in
+    
+    % Checking if covariate has been specified
+    if ~(isempty(cov_col))
+        cov_data = cell(length(subj_list),1); % Open array to place files in
+    else
+        cov_data = [];
+    end
+    
     for sub = 1:length(subj_list)
  
         s = subj_list(sub);
@@ -53,7 +62,12 @@ else
         reg = [];
         reg = regressor(row_num, 2);
         regressor_data(sub,1) = num2cell(reg);
- 
+        
+        % adding covariate if specified
+        if ~(isempty(cov_data))
+            cov_data(sub,1) = num2cell(reg);
+        end
+        
     end
  
  
@@ -78,10 +92,10 @@ else
  
             % Retrieving file
             if strcmp(con_type,'activation')
-                contrast = 'con_0001_zeroed.img'; % 001 = activation
+                contrast = 'con_0001.img'; % 001 = activation
                 batch = 1;
             else
-                contrast = 'con_0002_zeroed.img'; % 002 = deactivation
+                contrast = 'con_0002.img'; % 002 = deactivation
                 batch = 4;
             end
  
@@ -104,7 +118,7 @@ else
  
         %% Step 4: Adding covariates (nuscience variables)
  
-        % Getting number of covariates and creating an empty array for values
+        % Getting covariates similar to main regressor data
         % cov_number = length(measure_col);
         % cov_data = cell(length(subject_data),cov_number);
         % 
