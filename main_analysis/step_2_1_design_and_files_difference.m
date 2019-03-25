@@ -33,6 +33,11 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Building large array with subject names and the factors
     all_data = num2cell(subject_groupings);
     
+    % Read in whole brain file, get volumes, then get indices = 1 for brain
+    wb = spm_vol('/Volumes/Seagate/DARPA/darpa_roi/wholeBrain.nii');
+    wb_vol = spm_read_vols(wb);
+    wb_location = find(wb_vol == 1);
+    
     % Looping over subjects to get scan data   
     for jj = 1:length(all_data)
         
@@ -48,7 +53,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         % Zeroing out data
         tic
-        zeroing_image([subject_files,'/',s,'/', contrast], '/Volumes/Seagate/DARPA/darpa_roi/wholeBrain.nii');
+        zeroing_image([subject_files,'/',s,'/', contrast], wb_location);
         toc
         
         % Retrieving file
