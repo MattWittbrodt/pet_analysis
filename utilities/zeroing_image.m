@@ -1,4 +1,5 @@
 % file = string of the filename
+% whole_brain = location of 1's in whole brain file.
 
 function zeroing_image(file, whole_brain)
 
@@ -9,10 +10,10 @@ img = spm_vol(file);
 img_vol = spm_read_vols(img);
 brain_activity = find(img_vol ~= 0);
 
-% Read in Whole Brain File and get location of brain
-wb = spm_vol(whole_brain);
-wb_vol = spm_read_vols(wb);
-wb_location = find(wb_vol == 1);
+% % Read in Whole Brain File and get location of brain
+% wb = spm_vol(whole_brain);
+% wb_vol = spm_read_vols(wb);
+% wb_location = find(wb_vol == 1);
 
 % Remove negative values and values outside of brain
 for ii = 1:length(brain_activity)
@@ -22,7 +23,7 @@ for ii = 1:length(brain_activity)
     % see if in the brain- if so, make sure positive
     %in_brain = find(wb_location == voxel);
     
-    if ~isempty(find(wb_location == voxel,1))
+    if ~isempty(find(whole_brain == voxel,1))
         
         % Making negative values 0
         if img_vol(ii) < 0
