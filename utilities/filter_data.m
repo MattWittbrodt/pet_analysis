@@ -1,7 +1,6 @@
 % All subjects = file (dataset) with all subjects and conditions to
-% subset
-% test = '~/DARPA/script_files/subject_groupings.xlsx';
-% subset_col = which column(s) are to be subsetted; 
+% subset. e.g.- '~/DARPA/script_files/subject_groupings.xlsx';
+% subset_col = which column(s) are to be subsetted; eg. - [2,3]
 % names = cell array of the names of the subset columns ex: {'ptsd','sham'}
 
 function filtered_data = filter_data(all_subjects, subset_col, names)
@@ -32,7 +31,8 @@ function filtered_data = filter_data(all_subjects, subset_col, names)
     
     % Creating a structure and filling it with dataframes
     % Column 1 = names, 2 = data
-    s = cell(combinations,2);
+    % Adding +1 for all data
+    s = cell(combinations+1,2);
     
     % Loop once for overall data, twice for other data
     for ii = 1:2

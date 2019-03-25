@@ -6,33 +6,38 @@
 # spm = location of a .csv from the SPM output 
 # name = character; descriptive name of contrast
 
-create_pet_table <- function(talairach,spm,name) {
+create_pet_table <- function(data = "~/Desktop/DARPA_regression/pep_active_vNS_activation.txt") {
   library(tidyverse)
   library(xtable)
   
   # Output from SPM
-  s <- read.csv(spm) %>%
-       select(equivk,X_Tal, Y_Tal, Z_Tal,equivZ) %>%
-       filter(is.na(X_Tal) == F)
-  
-  # Output from Talairach Client
-  t <- read.table(talairach, sep = "\t", header = T) %>%
-       .[,-c(1,8,10,11)] %>%
-       mutate(Level.1 = substr(Level.1,1,1),
-              Brodmann_Area = str_replace(Level.5,"Brodmann area ",""),
-              Area = paste(Level.1, Level.2, Level.3, sep = ", ")) %>%
-       select(-Level.1, -Level.2, -Level.3,-Level.5)
-  
-  
-  df <- cbind(s,t) %>%
+  s <- read.table(data, sep = ',', skip = 1, header = T, fill = T) %>% 
+       select(equivk,X_Tal, Y_Tal, Z_Tal,equivZ, X, X.1, X.2,X.4) %>%
+       mutate(hemisphere = str_extract(X, "[RL]"),
+              cerebellum_presence = str_detect(X, "Cerebellum"),
+              hemisphere_lobe = ifelse(cerebellum_presence == TRUE, paste(hemisphere, "Cerebellum", sep = " "),
+                                       ifelse(str_detect(X.1, "Sub-lobar") & str_detect(X.4, "[:punct:]"), paste(hemisphere, X.2, sep = " "),
+                                                         ifelse(str_detect(X.1, "Sub-lobar") & !str_detect(X.4, "[:punct:]"), paste(hemisphere, X.2, sep = " "),
+                                                                paste(hemisphere, X.1, sep = " ")))),
+              Brodmann_Area = str_replace_all(X.4, "[^[:digit:]]",""),
+              Area = ifelse(cerebellum_presence == T | str_detect(X.1, "Sub-lobar"), hemisphere_lobe,
+                            paste(hemisphere_lobe, X.2, sep = ", "))) %>%
+      select(-X, -X.1, -X.2, -X.4, -hemisphere, -cerebellum_presence, -hemisphere_lobe)
+            
+  # rearranging order for table
+  df <- s %>%
         select(equivk,Area,Brodmann_Area,X_Tal,Y_Tal,Z_Tal,equivZ)
   
-  colnames(df) <-c("Voxel Number" ,"Brain Regions", "Brodmann Area", "X", "Y", "Z", "Z Score")
+  colnames(df) <-c("Voxel Number" ,"Brain Region", "Brodmann Area", "X", "Y", "Z", "Z Score")
+  
+  ### Getting name of file
+  n <- str_split(data, "/") 
+  n <- str_replace(n[[1]][[length(n[[1]])]],".txt", "")
   
   ### Exporting as HTML for pasting into word
   xt <- xtable(df)
   print.xtable(xt, 
                type="html", 
-               file = paste("~/Desktop/",name,".html", sep = ""), include.rownames = F)
+               file = paste("~/Desktop/",n,".html", sep = ""), include.rownames = F)
   
 }
