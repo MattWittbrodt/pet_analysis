@@ -77,9 +77,9 @@ for ii=1:length(subjects)
     
     % Read in activation file
     if activity == "activation"
-        contrast = 'con_0001.img';
+        contrast = 'con_0001.nii';
     else
-        contrast = 'con_0002.img';
+        contrast = 'con_0002.nii';
     end
     
     s = spm_vol([subj_files,'/',num2str(subj),'/',contrast]);
