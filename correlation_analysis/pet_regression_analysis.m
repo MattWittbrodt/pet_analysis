@@ -27,7 +27,7 @@ regressor = rmmissing(regressor(:,[1,regressor_col]));
 remove_subjects = [];
 for ii = 1:length(subj_list)
     s = subj_list(ii);
-    if isempty(find(regressor(:,1) == s))
+    if ~any(regressor(:) == s)
         remove_subjects = [remove_subjects,ii];
     end
 end
@@ -59,7 +59,6 @@ else
         row_num = find(regressor == s);
  
         % getting the regressor and placing into the covariate structure
-        reg = [];
         reg = regressor(row_num, 2);
         regressor_data(sub,1) = num2cell(reg);
         
