@@ -100,8 +100,10 @@ else
             end
             
             % Zeroing out negative values
+            tic
             zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
- 
+            toc
+            
             file = [data_dir,'/',num2str(s),'/',contrast,',1'];
             scan_data{sub} = file;
         end
