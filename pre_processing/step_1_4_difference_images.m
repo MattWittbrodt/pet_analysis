@@ -1,4 +1,6 @@
-function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name)
+% Contrasts = matrix with the excel file contrasts
+
+function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts)
 
     %% Pre-computing variables for input into batch file
     
@@ -21,97 +23,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         scan_name = file_array{yy};
         scan_index = str2num(cell2mat(extractBetween(file_array(yy),"_w","_")));
         condition_array(yy,1) = scan_characteristics(scan_index,2);
-    end
-    
-    % Getting levels of scan type
-%     levels = unique(scan_characteristics(:,2));
-%     levels = transpose(levels);
-    
-    % Loop over scans and place into cell array
-
-    
-%    for lev = 1:length(levels)
-%        
-%        cur_level = levels(lev);
-%        
-%        % Getting the scans applying to the factor
-%        only_scans = scan_characteristics(scan_characteristics(:,2) == cur_level,:);
-%        [scan_n, ~] = size(only_scans);
-%        
-%        % Creating Cell
-%        contrast_scans = strings(scan_n,1);
-%        
-%        % Adding scans
-%        for ii = 1:length(contrast_scans)
-%            contrast_scans(ii) = scans(ii).name;
-%        end
-%        
-%        % Converting to Cell string
-%        contrast_scans = cellstr(contrast_scans);
-%        
-%        % Placing into array
-%        if lev == 1
-%           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans1 = contrast_scans;
-%        else
-%           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans2 = contrast_scans;
-%        end
-%    end
-%    
-%    % Other aspects
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.dept = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.variance = 0;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.gmsca = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.ancova = 0;
-%    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
-%    matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
-%    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
-%    matlabbatch{1}.spm.stats.factorial_design.globalc.g_mean = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50;
-%    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2;    
-% =======
-%     
-%    for lev = 1:length(levels)
-%        
-%        cur_level = levels(lev);
-%        
-%        % Getting the scans applying to the factor
-%        only_scans = scan_characteristics(scan_characteristics(:,2) == cur_level,:);
-%        [scan_n, ~] = size(only_scans);
-%        
-%        % Creating Cell
-%        contrast_scans = strings(scan_n,1);
-%        
-%        % Adding scans
-%        for ii = 1:length(contrast_scans)
-%            contrast_scans(ii) = scans(ii).name;
-%        end
-%        
-%        % Converting to Cell string
-%        contrast_scans = cellstr(contrast_scans);
-%        
-%        % Placing into array
-%        if lev == 1
-%           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans1 = contrast_scans;
-%        else
-%           matlabbatch{1}.spm.stats.factorial_design.des.t2.scans2 = contrast_scans;
-%        end
-%    end
-%    
-%    % Other aspects
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.dept = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.variance = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.gmsca = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.des.t2.ancova = 0;
-%    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
-%    matlabbatch{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
-%    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
-%    matlabbatch{1}.spm.stats.factorial_design.globalc.g_mean = 1;
-%    matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_yes.gmscv = 50;
-%    matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 2;    
+    end    
            
     %% Completing batch file
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
@@ -138,15 +50,29 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
 
     %% Creating contrasts estimation
     matlabbatch{3}.spm.stats.con.spmmat = {[subj_dir,'SPM.mat']};
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = [measure_name, '_activation']; % First contrast is the activation (stress > control)
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [-1 1];
-    matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = [measure_name, '_deactivation']; % Second is the deactivation (control > stress)
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.convec = [1 -1];
-    matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'overall'; % Third is a weight average of the two (suggested via SPM Wiki)
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.convec = [1 1];
-    matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
+
+    % Get number of rows in contrast file
+    [nrow,ncol] = size(contrasts);
+
+    % Iterate over all contrasts
+    for ii = 1:nrow
+        matlabbatch{3}.spm.stats.con.consess{ii}.tcon.name = char(contrasts(ii));
+        matlabbatch{3}.spm.stats.con.consess{ii}.tcon.convec = cell2mat(contrasts(ii,2:ncol));
+        matlabbatch{3}.spm.stats.con.consess{ii}.tcon.sessrep = 'none';
+    end
+    
+    % Do not delete after finishing
     matlabbatch{3}.spm.stats.con.delete = 0;
+    
+%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = [measure_name, '_activation']; % First contrast is the activation (stress > control)
+%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [-1 1];
+%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
+%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = [measure_name, '_deactivation']; % Second is the deactivation (control > stress)
+%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.convec = [1 -1];
+%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'overall'; % Third is a weight average of the two (suggested via SPM Wiki)
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.convec = [1 1];
+%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
+%     matlabbatch{3}.spm.stats.con.delete = 0;
     
 end
