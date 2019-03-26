@@ -1,6 +1,6 @@
 % Contrasts = matrix with the excel file contrasts
 
-function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts)
+function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
 
     %% Pre-computing variables for input into batch file
     
@@ -29,7 +29,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = measure_name;
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.dept = 1; % dependence
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = 1; %Unequal
+    matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = var; %Unequal
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.gmsca = 1; %Include grand mean scaling
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.ancova = 0; %No ANCOVA
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject.scans = file_array;
