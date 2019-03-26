@@ -5,8 +5,9 @@
 % data_dir = brain activation network
 % subj_list = list of subjects to be included within the analysis
 % cov_col = column in excel file with column for covariate - if none, empty
+% wb = whole brain- an indexed double with all brain locations
  
-function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, cov_col, output_dir, data_dir, subj_list)
+function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, cov_col, output_dir, data_dir, subj_list, wb)
  
     
 %% Step 1: Reading in Subject Groupings and Files
@@ -27,7 +28,7 @@ regressor = rmmissing(regressor_excel(:,[1,regressor_col,cov_col]));
 remove_subjects = [];
 for ii = 1:length(subj_list)
     s = subj_list(ii);
-    if isempty(find(regressor(:,1) == s))
+    if ~any(regressor(:) == s)
         remove_subjects = [remove_subjects,ii];
     end
 end
@@ -92,13 +93,18 @@ else
  
             % Retrieving file
             if strcmp(con_type,'activation')
-                contrast = 'con_0001.img'; % 001 = activation
+                contrast = 'con_0001.nii'; % 001 = activation
                 batch = 1;
             else
-                contrast = 'con_0002.img'; % 002 = deactivation
+                contrast = 'con_0002.nii'; % 002 = deactivation
                 batch = 4;
             end
- 
+            
+            % Zeroing out negative values
+            tic
+            zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
+            toc
+            
             file = [data_dir,'/',num2str(s),'/',contrast,',1'];
             scan_data{sub} = file;
         end
