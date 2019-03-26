@@ -91,10 +91,10 @@ else
  
             % Retrieving file
             if strcmp(con_type,'activation')
-                contrast = 'con_0001.img'; % 001 = activation
+                contrast = 'con_0001.nii'; % 001 = activation
                 batch = 1;
             else
-                contrast = 'con_0002.img'; % 002 = deactivation
+                contrast = 'con_0002.nii'; % 002 = deactivation
                 batch = 4;
             end
  
