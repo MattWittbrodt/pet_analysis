@@ -22,8 +22,8 @@ function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, co
 regressor = xlsread(regressor_file);
  
 % Remove missing NaN
-regressor = rmmissing(regressor(:,[1,regressor_col]));
- 
+regressor = rmmissing(regressor(:,[1,regressor_col, cov_col]));
+
 % Running equivalency check - removing subjects without regressor data
 remove_subjects = [];
 for ii = 1:length(subj_list)
@@ -65,7 +65,8 @@ else
         
         % adding covariate if specified
         if ~(isempty(cov_data))
-            cov_data(sub,1) = num2cell(reg);
+            cov = regressor(row_num, 3);
+            cov_data(sub,1) = num2cell(cov);
         end
         
     end
