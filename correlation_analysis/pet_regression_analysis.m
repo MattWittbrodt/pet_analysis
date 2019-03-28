@@ -175,10 +175,10 @@ else
         % into it. If entering covariates into scan data, will appear before
         % study-wide covariate
         matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.name = 'positive';
-        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0, (1:length(cov_col)*0), 1];
+        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0, (1:length(cov_col))*0, 1];
         matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
         matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.name = 'negative';
-        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0, (1:length(cov_col)*0), -1];
+        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0, (1:length(cov_col))*0, -1];
         matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
         matlabbatch{batch+2}.spm.stats.con.delete = 0;
  
