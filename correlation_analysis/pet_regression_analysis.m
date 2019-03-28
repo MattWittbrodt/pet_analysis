@@ -122,7 +122,11 @@ else
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
  
         %% Step 4: Adding covariates (nuscience variables)
- 
+        matlabbatch{batch}.spm.stats.factorial_design.cov(1).c = cov_data;
+        matlabbatch{batch}.spm.stats.factorial_design.cov(1).cname = 'covariate_1';
+        matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCFI = 1; % no interaction
+        matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCC = 1; % overall mean
+        
         % Getting covariates similar to main regressor data
         % cov_number = length(measure_col);
         % cov_data = cell(length(subject_data),cov_number);
@@ -147,8 +151,8 @@ else
         % end
  
         %% Adding other generic information into batch
-        matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
-        matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
+        %matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+        %matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{batch}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.im = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.em = {''};
