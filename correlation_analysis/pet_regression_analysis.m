@@ -122,7 +122,7 @@ else
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
  
         %% Step 4: Adding covariates (nuscience variables)
-        matlabbatch{batch}.spm.stats.factorial_design.cov(1).c = cov_data;
+        matlabbatch{batch}.spm.stats.factorial_design.cov(1).c = cell2mat(cov_data);
         matlabbatch{batch}.spm.stats.factorial_design.cov(1).cname = 'covariate_1';
         matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCFI = 1; % no interaction
         matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCC = 1; % overall mean
