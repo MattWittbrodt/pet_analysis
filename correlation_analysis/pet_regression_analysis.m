@@ -49,7 +49,7 @@ else
     
     % Checking if covariate has been specified
     if ~(isempty(cov_col))
-        cov_data = cell(length(subj_list),1); % Open array to place files in
+        cov_data = cell(length(subj_list),length(cov_col)); % Open array to place files in
     else
         cov_data = [];
     end
@@ -65,8 +65,11 @@ else
         
         % adding covariate if specified
         if ~(isempty(cov_data))
-            cov = regressor(row_num, 3);
-            cov_data(sub,1) = num2cell(cov);
+            
+            for c = 1:length(cov_col)
+                cov = regressor(row_num, 2+c);
+                cov_data(sub,c) = num2cell(cov);
+            end
         end
         
     end
@@ -123,10 +126,13 @@ else
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
  
         %% Step 4: Adding covariates (nuscience variables)
-        matlabbatch{batch}.spm.stats.factorial_design.cov(1).c = cell2mat(cov_data);
-        matlabbatch{batch}.spm.stats.factorial_design.cov(1).cname = 'covariate_1';
-        matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCFI = 1; % no interaction
-        matlabbatch{batch}.spm.stats.factorial_design.cov(1).iCC = 1; % overall mean
+        
+        for c = 1:length(cov_col) 
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
+        end
         
         % Getting covariates similar to main regressor data
         % cov_number = length(measure_col);
