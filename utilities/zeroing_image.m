@@ -18,7 +18,7 @@ brain_activity = brain_activity(:);
 
 % Making a logical vector with areas with activity - using t score of 
 brain_acitivity_inds = brain_activity;
-brain_acitivity_inds(brain_acitivity_inds > 1.5) = 1;
+brain_acitivity_inds(brain_acitivity_inds > 5) = 1;
 
 % Creating area with brain activity and adding 1's where whole brain is
 brain_inds = zeros(length(brain_activity), 1);
