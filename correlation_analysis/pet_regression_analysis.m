@@ -19,11 +19,11 @@ function matlabbatch = pet_regression_analysis(regressor_file, regressor_col, co
 %subject_data = {subject_data.name}.'; %.' fills vertically
  
 %% Step 2: Read in regressor and then cross reference with subject files
-regressor_excel = xlsread(regressor_file);
+regressor = xlsread(regressor_file);
  
 % Remove missing NaN
-regressor = rmmissing(regressor_excel(:,[1,regressor_col,cov_col]));
- 
+regressor = rmmissing(regressor(:,[1,regressor_col, cov_col]));
+
 % Running equivalency check - removing subjects without regressor data
 remove_subjects = [];
 for ii = 1:length(subj_list)
@@ -49,7 +49,7 @@ else
     
     % Checking if covariate has been specified
     if ~(isempty(cov_col))
-        cov_data = cell(length(subj_list),1); % Open array to place files in
+        cov_data = cell(length(subj_list),length(cov_col)); % Open array to place files in
     else
         cov_data = [];
     end
@@ -65,8 +65,11 @@ else
         
         % adding covariate if specified
         if ~(isempty(cov_data))
-            cov = regressor(row_num,3);
-            cov_data(sub,1) = num2cell(cov);
+            
+            for c = 1:length(cov_col)
+                cov = regressor(row_num, 2+c);
+                cov_data(sub,c) = num2cell(cov);
+            end
         end
         
     end
@@ -122,18 +125,41 @@ else
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
         matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
  
-        %% Step 4: Adding covariates (nuiscence variables)
-        if ~(isempty(cov_data))
-            matlabbatch{batch}.spm.stats.factorial_design.cov.c = cell2mat(cov_data);
-            matlabbatch{batch}.spm.stats.factorial_design.cov.cname = 'covariate';
-            matlabbatch{batch}.spm.stats.factorial_design.cov.iCFI = 1;
-            matlabbatch{batch}.spm.stats.factorial_design.cov.iCC = 1;
-        else
-            matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
-            matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
+        %% Step 4: Adding covariates (nuscience variables)
+        
+        for c = 1:length(cov_col) 
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
+            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
         end
+        
+        % Getting covariates similar to main regressor data
+        % cov_number = length(measure_col);
+        % cov_data = cell(length(subject_data),cov_number);
+        % 
+        % % Looping through covariates and placing into array
+        % for sub = 1:length(subject_data)
+        %     
+        %     s = subject_data{sub};
+        %     row_num = find(subjects == str2num(s));
+        %     
+        %     % getting the covariates and placing into the covariate structure
+        %     cov = [];
+        %     if cov_number == 1
+        %         cov = subjects(row_num, 1+length(cov_number));
+        %         cov_data(sub, 1) = num2cell(cov);
+        %     else
+        %         final_col = 1+cov_number;
+        %         cov = subjects(row_num, 2:final_col);
+        %         cov_data(sub, 1:length(cov)) = num2cell(cov);
+        %     end
+        % 
+        % end
  
         %% Adding other generic information into batch
+        %matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
+        %matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
         matlabbatch{batch}.spm.stats.factorial_design.masking.tm.tm_none = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.im = 1;
         matlabbatch{batch}.spm.stats.factorial_design.masking.em = {''};
@@ -156,10 +182,10 @@ else
         % into it. If entering covariates into scan data, will appear before
         % study-wide covariate
         matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.name = 'positive';
-        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0 1];
+        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0, (1:length(cov_col))*0, 1];
         matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
         matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.name = 'negative';
-        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0 -1];
+        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0, (1:length(cov_col))*0, -1];
         matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
         matlabbatch{batch+2}.spm.stats.con.delete = 0;
  
