@@ -20,11 +20,11 @@ function filtered_data = filter_data(all_subjects, subset_col, names)
     % For now, not doing more than 3 
     combinations = [];
     if length(subset_col) == 1
-        combinations = col_maxes+1;
+        combinations = col_maxes;
     elseif length(subset_col) == 2
-        combinations = col_maxes(1)*col_maxes(2) + 1;
+        combinations = col_maxes(1)*col_maxes(2);
     elseif length(subset_col) == 3
-        combinations = col_maxes(1)*col_maxes(2)*col_maxes(3) + 1;
+        combinations = col_maxes(1)*col_maxes(2)*col_maxes(3);
     else
         combinations = [];
     end

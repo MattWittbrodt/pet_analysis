@@ -107,7 +107,13 @@ for ii=1:length(subjects)
             end
             
             %Mean of mask data
-            mean_activation = mean(mask_data(mask_data > 0));
+            mean_activation = [];
+            
+            if mean(mask_data) > 0
+                mean_activation = mean(mask_data(mask_data > 0));
+            else
+                mean_activation = 0;
+            end
         end
         
         % Placing into subject data
