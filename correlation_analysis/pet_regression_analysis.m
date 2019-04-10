@@ -121,10 +121,12 @@ else
         %% Step 3: Adding data to regression against (called covariate in SPM)
  
         % Place into regression array
-        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.c = cell2mat(regressor_data);
-        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.cname = 'regressor';
-        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov.iCC = 1; %centered with mean
- 
+        for r = 1:length(regressor_col)
+            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r)));
+            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
+            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; %centered with mean
+        end
+        
         %% Step 4: Adding covariates (nuscience variables)
         
         for c = 1:length(cov_col) 
@@ -134,29 +136,6 @@ else
             matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
         end
         
-        % Getting covariates similar to main regressor data
-        % cov_number = length(measure_col);
-        % cov_data = cell(length(subject_data),cov_number);
-        % 
-        % % Looping through covariates and placing into array
-        % for sub = 1:length(subject_data)
-        %     
-        %     s = subject_data{sub};
-        %     row_num = find(subjects == str2num(s));
-        %     
-        %     % getting the covariates and placing into the covariate structure
-        %     cov = [];
-        %     if cov_number == 1
-        %         cov = subjects(row_num, 1+length(cov_number));
-        %         cov_data(sub, 1) = num2cell(cov);
-        %     else
-        %         final_col = 1+cov_number;
-        %         cov = subjects(row_num, 2:final_col);
-        %         cov_data(sub, 1:length(cov)) = num2cell(cov);
-        %     end
-        % 
-        % end
- 
         %% Adding other generic information into batch
         %matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
         %matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
