@@ -45,7 +45,7 @@ if length(subj_list) <= 2
 else
  
     % Looping through regressor data and covariate and placing into array
-    regressor_data = cell(length(subj_list),1); % Open array to place files in
+    regressor_data = cell(length(subj_list),length(regressor_col)); % Open array to place files in
     
     % Checking if covariate has been specified
     if ~(isempty(cov_col))
@@ -60,8 +60,8 @@ else
         row_num = find(regressor == s);
  
         % getting the regressor and placing into the covariate structure
-        reg = regressor(row_num, 2);
-        regressor_data(sub,1) = num2cell(reg);
+        reg = regressor(row_num, regressor_col);
+        regressor_data(sub,:) = num2cell(reg);
         
         % adding covariate if specified
         if ~(isempty(cov_data))
