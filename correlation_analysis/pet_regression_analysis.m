@@ -160,13 +160,17 @@ else
         % Creating contrasts - only 1 (positive) given the contrast image leading
         % into it. If entering covariates into scan data, will appear before
         % study-wide covariate
-        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.name = 'positive';
-        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.convec = [0, (1:length(cov_col))*0, 1];
-        matlabbatch{batch+2}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.name = 'negative';
-        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.weights = [0, (1:length(cov_col))*0, -1];
-        matlabbatch{batch+2}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
-        matlabbatch{batch+2}.spm.stats.con.delete = 0;
+        for con = 1:length(regressor_col)
+            array = zeros(1,length(regressor_col));
+            array(con) = 1;
+            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.name = 'positive';
+            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.convec = [0, (1:length(cov_col))*0, array];
+            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.sessrep = 'none';
+            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.name = 'negative';
+            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
+            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.sessrep = 'none';
+            matlabbatch{batch+2}.spm.stats.con.delete = 0;
+        end
  
     end
  
