@@ -178,16 +178,17 @@ else
             
             % if the regressor is not unique, put in a dummy contrast
             if ~unique(1+length(cov_col) + c)
-                array(1) = 1;
+                contrast_vector = [1, (1:length(cov_col))*0, array];
             else
                 array(c) = 1;
+                contrast_vector = [0, (1:length(cov_col))*0, array];
             end
             
             matlabbatch{batch}.spm.stats.con.consess{c}.tcon.name = 'positive';
-            matlabbatch{batch}.spm.stats.con.consess{c}.tcon.convec = [0, (1:length(cov_col))*0, array];
+            matlabbatch{batch}.spm.stats.con.consess{c}.tcon.convec = contrast_vector;
             matlabbatch{batch}.spm.stats.con.consess{c}.tcon.sessrep = 'none';
             matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.name = 'negative';
-            matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
+            matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.weights = contrast_vector*-1;
             matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.sessrep = 'none';
             matlabbatch{batch}.spm.stats.con.delete = 0;
         end
