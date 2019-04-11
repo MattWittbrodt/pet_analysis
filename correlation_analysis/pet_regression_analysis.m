@@ -163,7 +163,7 @@ else
         SPM = spm_load([output_dir,'/',con_type,'/','SPM.mat']);
         
         % getting logic array: 1 = unique, 0 = not unique
-        unique = spm_SpUtil('IsCon',SPM.SPM.xX.X);
+        unique = spm_SpUtil('IsCon',SPM.SPM.xX.X)
                
         %% Batch 3 - Contrast
  
@@ -173,22 +173,22 @@ else
         % Creating contrasts - only 1 (positive) given the contrast image leading
         % into it. If entering covariates into scan data, will appear before
         % study-wide covariate
-        for con = 1:length(regressor_col)
+        for c = 1:length(regressor_col)
             array = zeros(1,length(regressor_col));
             
             % if the regressor is not unique, put in a dummy contrast
-            if ~unique(1+length(cov_col) + con)
+            if ~unique(1+length(cov_col) + c)
                 array(1) = 1;
             else
-                array(con) = 1;
+                array(c) = 1;
             end
             
-            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.name = 'positive';
-            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.convec = [0, (1:length(cov_col))*0, array];
-            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.sessrep = 'none';
-            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.name = 'negative';
-            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
-            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.sessrep = 'none';
+            matlabbatch{batch}.spm.stats.con.consess{c}.tcon.name = 'positive';
+            matlabbatch{batch}.spm.stats.con.consess{c}.tcon.convec = [0, (1:length(cov_col))*0, array];
+            matlabbatch{batch}.spm.stats.con.consess{c}.tcon.sessrep = 'none';
+            matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.name = 'negative';
+            matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
+            matlabbatch{batch}.spm.stats.con.consess{c+length(regressor_col)}.tcon.sessrep = 'none';
             matlabbatch{batch}.spm.stats.con.delete = 0;
         end
  
