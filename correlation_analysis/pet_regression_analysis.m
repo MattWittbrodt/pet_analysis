@@ -126,7 +126,7 @@ else
         for r = 1:length(regressor_col)
             matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
             matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
-            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 5; % nocentered with mean
+            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
         end
         
         %% Step 4: Adding covariates (nuscience variables)
