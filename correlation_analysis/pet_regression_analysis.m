@@ -102,7 +102,7 @@ else
                 batch = 1;
             else
                 contrast = 'con_0002.nii'; % 002 = deactivation
-                batch = 4;
+                batch = 2;
             end
             
             % Zeroing out negative values
@@ -115,49 +115,65 @@ else
         end
         
         % Identify ouptput directory for .SPM
-        matlabbatch{batch}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
+        matlabbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
  
         % Adding into batch file
-        matlabbatch{batch}.spm.stats.factorial_design.des.mreg.scans = scan_data;
+        matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
  
         %% Step 3: Adding data to regression against (called covariate in SPM)
  
         % Place into regression array
         for r = 1:length(regressor_col)
-            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
-            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
-            matlabbatch{batch}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
+            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
+            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
+            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
         end
         
         %% Step 4: Adding covariates (nuscience variables)
         
         for c = 1:length(cov_col) 
-            matlabbatch{batch}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
-            matlabbatch{batch}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
-            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
-            matlabbatch{batch}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
+            matlabbatch{1}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
+            matlabbatch{1}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
+            matlabbatch{1}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
+            matlabbatch{1}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
         end
         
         %% Adding other generic information into batch
         %matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
         %matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
-        matlabbatch{batch}.spm.stats.factorial_design.masking.tm.tm_none = 1;
-        matlabbatch{batch}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{batch}.spm.stats.factorial_design.masking.em = {''};
-        matlabbatch{batch}.spm.stats.factorial_design.globalc.g_omit = 1;
-        matlabbatch{batch}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
-        matlabbatch{batch}.spm.stats.factorial_design.globalm.glonorm = 1;
+        matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
+        matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
+        matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
+        matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
+        matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
+        matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
  
         %% Batch 2 - Model Estimation - Keeping Vanilla for now
         
-        matlabbatch{batch + 1}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
-        matlabbatch{batch + 1}.spm.stats.fmri_est.write_residuals = 0;
-        matlabbatch{batch + 1}.spm.stats.fmri_est.method.Classical = 1;
- 
+        matlabbatch{2}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+        matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
+        matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
+        
+        % Running jobs up until now
+        spm_jobman('run', matlabbatch)
+        matlabbatch = {};
+        
+        %% Examining if beta values are not unique
+        
+        %loading in SPM
+        SPM = spm_load([output_dir,'/',con_type,'/','SPM.mat']);
+        
+        % getting logic array: 1 = unique, 0 = not unique
+        unique = spm_SpUtil('IsCon',SPM.SPM.xX.X);
+        
+        % finding out total number of contrasts to be run
+        % (1 + cov_col + 1) = subject, cov cols, starting con
+        con_num = sum(unique((1+length(cov_col)+1):length(unique)));
+               
         %% Batch 3 - Contrast
  
         % Keeping dependency from estimated model
-        matlabbatch{batch + 2}.spm.stats.con.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+        matlabbatch{batch}.spm.stats.con.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
  
         % Creating contrasts - only 1 (positive) given the contrast image leading
         % into it. If entering covariates into scan data, will appear before
@@ -165,13 +181,13 @@ else
         for con = 1:length(regressor_col)
             array = zeros(1,length(regressor_col));
             array(con) = 1;
-            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.name = 'positive';
-            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.convec = [0, (1:length(cov_col))*0, array];
-            matlabbatch{batch+2}.spm.stats.con.consess{con}.tcon.sessrep = 'none';
-            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.name = 'negative';
-            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
-            matlabbatch{batch+2}.spm.stats.con.consess{con+length(regressor_col)}.tcon.sessrep = 'none';
-            matlabbatch{batch+2}.spm.stats.con.delete = 0;
+            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.name = 'positive';
+            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.convec = [0, (1:length(cov_col))*0, array];
+            matlabbatch{batch}.spm.stats.con.consess{con}.tcon.sessrep = 'none';
+            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.name = 'negative';
+            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.weights = [0, (1:length(cov_col))*0, (array*-1)];
+            matlabbatch{batch}.spm.stats.con.consess{con+length(regressor_col)}.tcon.sessrep = 'none';
+            matlabbatch{batch}.spm.stats.con.delete = 0;
         end
  
     end
