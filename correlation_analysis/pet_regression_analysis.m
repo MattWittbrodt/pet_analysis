@@ -163,7 +163,7 @@ else
         SPM = spm_load([output_dir,'/',con_type,'/','SPM.mat']);
         
         % getting logic array: 1 = unique, 0 = not unique
-        unique = spm_SpUtil('IsCon',SPM.SPM.xX.X)
+        unique = spm_SpUtil('IsCon',SPM.SPM.xX.nKX)
                
         %% Batch 3 - Contrast
  
