@@ -115,48 +115,47 @@ else
         end
         
         % Identify ouptput directory for .SPM
-        matlabbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
+        initialbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
  
         % Adding into batch file
-        matlabbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
+        initialbatch{1}.spm.stats.factorial_design.des.mreg.scans = scan_data;
  
         %% Step 3: Adding data to regression against (called covariate in SPM)
  
         % Place into regression array
         for r = 1:length(regressor_col)
-            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
-            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
-            matlabbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
+            initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
+            initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
+            initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
         end
         
         %% Step 4: Adding covariates (nuscience variables)
         
         for c = 1:length(cov_col) 
-            matlabbatch{1}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
-            matlabbatch{1}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
-            matlabbatch{1}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
-            matlabbatch{1}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
+            initialbatch{1}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
+            initialbatch{1}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
+            initialbatch{1}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
+            initialbatch{1}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
         end
         
         %% Adding other generic information into batch
         %matlabbatch{batch}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
         %matlabbatch{batch}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
-        matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.im = 1;
-        matlabbatch{1}.spm.stats.factorial_design.masking.em = {''};
-        matlabbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
-        matlabbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
-        matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
+        initialbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
+        initialbatch{1}.spm.stats.factorial_design.masking.im = 1;
+        initialbatch{1}.spm.stats.factorial_design.masking.em = {''};
+        initialbatch{1}.spm.stats.factorial_design.globalc.g_omit = 1;
+        initialbatch{1}.spm.stats.factorial_design.globalm.gmsca.gmsca_no = 1;
+        initialbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
  
         %% Batch 2 - Model Estimation - Keeping Vanilla for now
         
-        matlabbatch{2}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
-        matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
-        matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
+        initialbatch{2}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+        initialbatch{2}.spm.stats.fmri_est.write_residuals = 0;
+        initialbatch{2}.spm.stats.fmri_est.method.Classical = 1;
         
         % Running jobs up until now
-        spm_jobman('run', matlabbatch)
-        matlabbatch = {};
+        spm_jobman('run', initialbatch)
         
         %% Examining if beta values are not unique
         
