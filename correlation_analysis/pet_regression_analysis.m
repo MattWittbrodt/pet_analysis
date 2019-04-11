@@ -165,10 +165,6 @@ else
         
         % getting logic array: 1 = unique, 0 = not unique
         unique = spm_SpUtil('IsCon',SPM.SPM.xX.X);
-        
-        % finding out total number of contrasts to be run
-        % (1 + cov_col + 1) = subject, cov cols, starting con
-        con_num = sum(unique((1+length(cov_col)+1):length(unique)));
                
         %% Batch 3 - Contrast
  
@@ -180,7 +176,14 @@ else
         % study-wide covariate
         for con = 1:length(regressor_col)
             array = zeros(1,length(regressor_col));
-            array(con) = 1;
+            
+            % if the regressor is not unique, put in a dummy contrast
+            if ~unique(1+length(cov_col) + con)
+                array(1) = 1;
+            else
+                array(con) = 1;
+            end
+            
             matlabbatch{batch}.spm.stats.con.consess{con}.tcon.name = 'positive';
             matlabbatch{batch}.spm.stats.con.consess{con}.tcon.convec = [0, (1:length(cov_col))*0, array];
             matlabbatch{batch}.spm.stats.con.consess{con}.tcon.sessrep = 'none';
