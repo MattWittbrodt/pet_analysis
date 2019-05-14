@@ -4,7 +4,7 @@
 % analysis_type = string- generally 'activation' or 'deactivation'
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors, subj_images)
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data
@@ -33,13 +33,31 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Building large array with subject names and the factors
     all_data = num2cell(subject_groupings);
     
+    % Building out array with number of scans in analysis. 
+    [rows,cols] = size(all_data);
+    all_data2 = cell(rows*length(subj_images),cols);
+    
+    row_count = 1;
+    for nn = 1:length(all_data)
+        
+        for ll = 1:length(subj_images)
+            
+            for cc = 1:cols
+                all_data2{row_count,cc} = all_data{nn,cc};
+            end
+            
+            row_count = row_count + 1;
+            
+        end
+    end
+                
     % Read in whole brain file, get volumes, then get indices = 1 for brain
     wb = spm_vol('/Volumes/Seagate/DARPA/darpa_roi/wholeBrain.nii');
     wb_vol = spm_read_vols(wb);
     wb_location = find(wb_vol == 1);
     
     % Looping over subjects to get scan data   
-    for jj = 1:length(all_data)
+    for jj = 1:length(all_data2)
         
         % Getting subject
         s = cell2char(all_data(jj,1));
