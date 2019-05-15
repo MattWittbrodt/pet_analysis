@@ -3,7 +3,7 @@
 function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
     
     %% Creating Error Text File
-    fileID = fopen([subj_files,'subject_errors.txt'],'w');
+    fileID = fopen([subj_files,'subject_errors.txt'],'a');
     
     %% Pre-computing variables for input into batch file
     
