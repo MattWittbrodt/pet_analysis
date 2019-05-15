@@ -48,16 +48,19 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     for ii = 1:ncol
         test = scan_available == ii;
         if sum(test) < 1
-            contrast_matrix(:,ii) = 0;
-            fprintf(fileID,'Subject %5d has no scans for condition %5d',subject,ii);
+            contrast_matrix(:,ii) = NaN;
+            fprintf(fileID,'Subject %s has no scans for condition %d',subject,ii);
         end
     end
+    
+    % Removing the columns with issues
+    contrast_matrix(:,any(isnan(contrast_matrix))) = [];
     
     for ii = 1:nrow
         s = sum(contrast_matrix(ii,:));
         if s ~= 0
            contrast_matrix(ii,:) = 0;
-           fprintf(fileID,'Subject %5d has no contrast %5d',subject,ii);
+           fprintf(fileID,'Subject %s has no contrast %d',subject,ii);
         end
     end 
            
