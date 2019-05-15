@@ -1,7 +1,9 @@
 % Contrasts = matrix with the excel file contrasts
 
 function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
-
+    
+    %%
+    
     %% Pre-computing variables for input into batch file
     
     % Creating directory string
@@ -11,9 +13,14 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     % places into it
     scans = dir(fullfile(subj_dir,'sw*.img'));
     file_array = cell(length(scans),1); %Predifine cell array
-
+    scan_count = zeros(length(scans),1); % Getting length of zeros
+    
     for i = 1:length(scans)
         file_array{i} = [scans(i).folder,'/',scans(i).name,',1'];
+        
+        % Using Regex to find scan numbers, then placing into zeros
+        scan_numbers = regexp(scans(i).name,'[0-9]*','match');
+        scan_count(i) = str2num(scan_numbers{1,2});
     end
     
     %% Creating condition array for scans
@@ -23,7 +30,33 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         scan_name = file_array{yy};
         scan_index = str2num(cell2mat(extractBetween(file_array(yy),"_w","_")));
         condition_array(yy,1) = scan_characteristics(scan_index,2);
-    end    
+    end
+    
+    %% Checking that all contrasts are there for each subject
+    % Getting size of contrast matrix
+    [~,ncol] = size(contrasts);
+    contrast_matrix = cell2mat(contrasts(:,2:ncol));
+    [nrow,ncol] = size(contrast_matrix);
+    
+    % Getting contrasts in subject data
+    scan_available = unique(condition_array);
+    
+    % Looping through contrast matrix to see if contrast is there- if not,
+    % chaing to zeroes. Then, making sure each contrast = 0. If not,
+    % deleting
+    for ii = 1:ncol
+        test = scan_available == ii;
+        if sum(test) < 1
+            contrast_matrix(:,ii) = 0;
+        end
+    end
+    
+    for ii = 1:nrow
+        s = sum(contrast_matrix(ii,:));
+        if s ~= 0
+           contrast_matrix(ii,:) = 0;
+        end
+    end
            
     %% Completing batch file
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
