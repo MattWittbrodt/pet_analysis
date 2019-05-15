@@ -35,7 +35,10 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     % Building out array with number of scans in analysis. 
     [rows,cols] = size(all_data);
-    all_data2 = cell(rows*length(subj_images),cols);
+    all_data2 = cell(rows*length(subj_images),cols+1);
+    
+    % Get matrix with scan indices
+    scan_index = repmat(subj_images,1,rows);
     
     row_count = 1;
     for nn = 1:length(all_data)
@@ -46,6 +49,8 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
                 all_data2{row_count,cc} = all_data{nn,cc};
             end
             
+            all_data2{row_count,cc+1} = ll;
+                       
             row_count = row_count + 1;
             
         end
@@ -59,18 +64,13 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Looping over subjects to get scan data   
     for jj = 1:length(all_data2)
         
-        % Getting subject
+        % Getting subject and scan number
         s = cell2char(all_data(jj,1));
+        contrast_number = scan_index(jj);
         
         % Getting contrast
-        if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
-                contrast = 'con_0001.nii';
-        elseif strcmp(analysis_type,'deactivation')
-                contrast = 'con_0002.nii';
-        else
-            contrast = [analysis_type,'.nii'];
-        end
-        
+        contrast = ['con_000',num2str(contrast_number),'.nii'];
+                
         % Zeroing out data
         tic
         zeroing_image([subject_files,'/',s,'/', contrast], wb_location);
