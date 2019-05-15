@@ -2,7 +2,8 @@
 
 function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
     
-    %%
+    %% Creating Error Text File
+    fileID = fopen('subject_errors.txt','w');
     
     %% Pre-computing variables for input into batch file
     
@@ -48,6 +49,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         test = scan_available == ii;
         if sum(test) < 1
             contrast_matrix(:,ii) = 0;
+            fprintf(fileID,'Subject %5d has no scans for condition %5d',subject,ii);
         end
     end
     
@@ -55,8 +57,9 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         s = sum(contrast_matrix(ii,:));
         if s ~= 0
            contrast_matrix(ii,:) = 0;
+           fprintf(fileID,'Subject %5d has no contrast %5d',subject,ii);
         end
-    end
+    end 
            
     %% Completing batch file
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
