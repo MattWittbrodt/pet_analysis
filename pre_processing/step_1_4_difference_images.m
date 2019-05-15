@@ -50,6 +50,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         if sum(test) < 1
             contrast_matrix(:,ii) = NaN;
             fprintf(fileID,'Subject %s has no scans for condition %d/n',subject,ii);
+            fprintf(fileID,'\n');
         end
     end
     
@@ -64,11 +65,12 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         if s ~= 0 || m < 1
            contrast_matrix(ii,:) = NaN;
            fprintf(fileID,'Subject %s has no contrast %d/n',subject,ii);
+           fprintf(fileID,'\n');
         end
     end
     
     % Removing the rows with issues
-    contrast_matrix(any(isnan(contrast_matrix)), :) = [];
+    contrast_matrix(any(isnan(contrast_matrix),2),:) = [];
            
     %% Completing batch file
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
