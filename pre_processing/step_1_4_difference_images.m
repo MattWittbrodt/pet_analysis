@@ -56,13 +56,19 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     % Removing the columns with issues
     contrast_matrix(:,any(isnan(contrast_matrix))) = [];
     
+    % Checking for incomplete contrasts or all 0's
     for ii = 1:nrow
         s = sum(contrast_matrix(ii,:));
-        if s ~= 0
-           contrast_matrix(ii,:) = 2;
+        m = max(contrast_matrix(ii,:));
+        
+        if s ~= 0 || m < 1
+           contrast_matrix(ii,:) = NaN;
            fprintf(fileID,'Subject %s has no contrast %d/n',subject,ii);
         end
-    end 
+    end
+    
+    % Removing the rows with issues
+    contrast_matrix(any(isnan(contrast_matrix)), :) = [];
            
     %% Completing batch file
     matlabbatch{1}.spm.stats.factorial_design.dir = {subj_dir};     
@@ -113,5 +119,8 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
 %     matlabbatch{3}.spm.stats.con.consess{3}.tcon.convec = [1 1];
 %     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
 %     matlabbatch{3}.spm.stats.con.delete = 0;
+
+    % Closing Error File
+    fclose(fileID);
     
 end
