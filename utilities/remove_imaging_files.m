@@ -26,6 +26,11 @@ function removed = remove_imaging_files(x)
            to_remove = [to_remove, ii];
         end
         
+        % find if there is a text (.txt) file
+        if sum(strfind(x(ii).name,".txt")) >= 1
+           to_remove = [to_remove, ii];
+        end
+        
     end
     
     % Removing index variables in matlab
