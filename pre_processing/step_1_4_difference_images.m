@@ -3,7 +3,7 @@
 function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
     
     %% Creating Error Text File
-    fileID = fopen('subject_errors.txt','w');
+    fileID = fopen([subj_files,'subject_errors.txt'],'w');
     
     %% Pre-computing variables for input into batch file
     
@@ -49,7 +49,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         test = scan_available == ii;
         if sum(test) < 1
             contrast_matrix(:,ii) = NaN;
-            fprintf(fileID,'Subject %s has no scans for condition %d',subject,ii);
+            fprintf(fileID,'Subject %s has no scans for condition %d/n',subject,ii);
         end
     end
     
@@ -59,8 +59,8 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     for ii = 1:nrow
         s = sum(contrast_matrix(ii,:));
         if s ~= 0
-           contrast_matrix(ii,:) = 0;
-           fprintf(fileID,'Subject %s has no contrast %d',subject,ii);
+           contrast_matrix(ii,:) = 2;
+           fprintf(fileID,'Subject %s has no contrast %d/n',subject,ii);
         end
     end 
            
@@ -91,12 +91,12 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     matlabbatch{3}.spm.stats.con.spmmat = {[subj_dir,'SPM.mat']};
 
     % Get number of rows in contrast file
-    [nrow,ncol] = size(contrasts);
+    [nrow,~] = size(contrast_matrix);
 
     % Iterate over all contrasts
     for ii = 1:nrow
         matlabbatch{3}.spm.stats.con.consess{ii}.tcon.name = char(contrasts(ii));
-        matlabbatch{3}.spm.stats.con.consess{ii}.tcon.convec = cell2mat(contrasts(ii,2:ncol));
+        matlabbatch{3}.spm.stats.con.consess{ii}.tcon.convec = contrast_matrix(ii,:);
         matlabbatch{3}.spm.stats.con.consess{ii}.tcon.sessrep = 'none';
     end
     
