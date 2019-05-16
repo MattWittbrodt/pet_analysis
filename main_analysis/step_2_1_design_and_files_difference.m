@@ -120,7 +120,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         for fac = 1:length(factors)
             factor_col = fac + 1;
-            conds(fac) = cell2mat(all_data(s,factor_col))+1;
+            conds(fac) = cell2mat(all_data(s,factor_col));
         end
 
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = conds; 
