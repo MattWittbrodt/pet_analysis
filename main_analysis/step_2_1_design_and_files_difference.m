@@ -29,10 +29,18 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Removing rows
     subject_groupings(rows_to_delete,:) = [];
     
+    % Processing factors- if min = 0, SPM will have an erro
+    [~,ncol] = size(subject_groupings);
+    for c = 1:ncol
+        if min(subject_groupings(:,c)) == 0
+           subject_groupings(:,c) = subject_groupings(:,c) + 1;
+        end
+    end
+    
     %% Second - looping over analysis_type (activation, deactivation, etc)
     % Building large array with subject names and the factors
     all_data = num2cell(subject_groupings);
-    
+
     % Building out array with number of scans in analysis. 
     [rows,cols] = size(all_data);
     all_data2 = cell(rows*length(subj_images),cols);
