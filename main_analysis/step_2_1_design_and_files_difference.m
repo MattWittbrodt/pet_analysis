@@ -4,7 +4,7 @@
 % analysis_type = string- generally 'activation' or 'deactivation'
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors, subj_images)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors, subj_images, covariates)
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data
@@ -135,10 +135,20 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
     
-    % No covariate (for now)
-    matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariate
-    matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; % Relative threshold masking with value of 0.8
-    
+    % Covariate
+    if ~isempty(covariates)
+        for cov = 1:length(covariates)
+            cov_col = 1 + length(factors) + cov;
+            matlabbatch{1}.spm.stats.factorial_design.cov(cov).c = cell2mat(all_data2(:,cov_col));
+            matlabbatch{1}.spm.stats.factorial_design.cov(cov).cname = cell2char(covariates(cov));
+            matlabbatch{1}.spm.stats.factorial_design.cov(cov).iCFI = 1;
+            matlabbatch{1}.spm.stats.factorial_design.cov(cov).iCC = 1;
+        end
+    else
+        matlabbatch{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {}); % No covariate
+        matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1; % Relative threshold masking with value of 0.8
+    end
+
     % No masking
     matlabbatch{1}.spm.stats.factorial_design.masking.tm.tm_none = 1;
     matlabbatch{1}.spm.stats.factorial_design.masking.im = 0;
