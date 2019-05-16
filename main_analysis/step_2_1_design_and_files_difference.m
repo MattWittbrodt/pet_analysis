@@ -127,13 +127,22 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
     end
     
-    % Identifying Interaction
-    inter = zeros(1,length(factors));
-    for int = 1:length(inter)
-        inter(int) = int;
-    end
+    % Identifying Interaction or Main Effect
+    if length(factors) > 1
+        
+        % Interaction array; adding variables to it
+        inter = zeros(1,length(factors));
+        for int = 1:length(inter)
+            inter(int) = int;
+        end
+        
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
+        
+    else
+        % If only one factor, use main effects
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1;
     
-    matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
+    end
     
     % Covariate
     if ~isempty(covariates)
