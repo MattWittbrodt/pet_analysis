@@ -1,6 +1,6 @@
 % Contrasts = matrix with the excel file contrasts
 
-function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var)
+function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var, contrast_sum)
     
     %% Creating Error Text File
     fileID = fopen([subj_files,'subject_errors.txt'],'a');
@@ -62,7 +62,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         s = sum(contrast_matrix(ii,:));
         m = max(contrast_matrix(ii,:));
         
-        if s ~= 0 || m < 1
+        if s ~= contrast_sum(ii) || m < 1
            contrast_matrix(ii,:) = NaN;
            fprintf(fileID,'Subject %s has no contrast %d/n',subject,ii);
            fprintf(fileID,'\n');
