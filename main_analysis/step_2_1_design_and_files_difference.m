@@ -4,7 +4,7 @@
 % analysis_type = string- generally 'activation' or 'deactivation'
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files,analysis_type, factors, subj_images, covariates)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates)
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data
@@ -71,14 +71,8 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         s = cell2char(all_data(jj,1));
         
         % Getting contrast
-        if strcmp(analysis_type,'activation') || strcmp(analysis_type,'activation_contrast')       
-                contrast = 'con_0001.nii';
-        elseif strcmp(analysis_type,'deactivation')
-                contrast = 'con_0002.nii';
-        else
-            contrast = [analysis_type,'.nii'];
-        end
-        
+        contrast = ['con_000',num2str(subj_images),'.nii'];
+                
         % Zeroing out data
         tic
         zeroing_image([subject_files,'/',s,'/', contrast], wb_location);
