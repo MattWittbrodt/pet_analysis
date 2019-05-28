@@ -196,7 +196,21 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             inter(int) = int;
         end
         
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
+        % Can only do 2 in an interaction, so looping over
+        if length(inter) > 2
+            
+            % Get all combinations of 2 (max for inter) for the factors
+            combos = nchoosek(inter, 2);
+            
+            for c = 1:length(combos)
+                matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{c}.inter.fnums = combos(c,:);
+            end
+            
+        else
+            
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.inter.fnums = inter;
+        
+        end
         
     else
         % If only one factor, use main effects
