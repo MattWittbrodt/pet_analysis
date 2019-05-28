@@ -72,7 +72,9 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     % Looping over subjects to get scan data
     empty_contrasts = [];
-    for jj = 1:length(all_data2)
+    [nrow, ncol] = size(all_data2);
+    
+    for jj = 1:nrow
         
         % Getting subject # and what subject image
         s = cell2char(all_data2(jj,1));
@@ -94,7 +96,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             file = [subject_files,'/',s,'/', contrast,',1'];
 
             % Placing into cell array
-            all_data{jj,1} = file;
+            all_data2{jj,ncol} = file;
             
         else
              % If file does not exist, remove from large array
@@ -120,9 +122,10 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Placing Factors into array
     if scans_as_factors == 1
        
-        % Get number of factors. ncol - 1 to remove subject # as factor
+        % Get number of factors. ncol - 2 to remove subject # as factor and
+        % string with subject scan data
         [~,ncol] = size(all_data2);
-        nfactor = ncol - 1; 
+        nfactor = ncol - 2;
         
         for fac = 1:nfactor
             
@@ -152,26 +155,43 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     end
     
     % Placing subjects into design
-    for s = 1:length(all_data)
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = cellstr(cell2char(all_data(s,1))); 
+    for s = 1:length(subjects)
         
-        % Looping over grouping factors
-        conds = zeros(1,length(factors));
+        % Subject ID
+        subject = subjects(s);
         
-        for fac = 1:length(factors)
-            factor_col = fac + 1;
-            conds(fac) = cell2mat(all_data(s,factor_col));
-        end
+        % Isolating the subject and relevant scans
+        subj_data_rows = find(~cellfun('isempty',strfind(all_data2(:,ncol),subject)));
+        
+        % Adding to subject scan data
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = all_data2(subj_data_rows,ncol);
+        
+        % Adding factor information
+        subj_conds = all_data2(subj_data_rows,2:ncol-1);
+        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = cell2mat(subj_conds); 
 
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = conds; 
+        % Looping over grouping factors
+%         conds = zeros(1,length(factors));
+        
+%         for fac = 1:length(factors)
+%             factor_col = fac + 1;
+%             conds(fac) = cell2mat(all_data(s,factor_col));
+%         end
+
+        %matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = conds; 
         
     end
     
     % Identifying Interaction or Main Effect
     if length(factors) > 1
         
+        % Getting size of data to calculate factor # (ncol - 2 for subject
+        % and factor #
+        [~,ncol] = size(all_data2);
+        nfactor = ncol - 2;
+        
         % Interaction array; adding variables to it
-        inter = zeros(1,length(factors));
+        inter = zeros(1,nfactor);
         for int = 1:length(inter)
             inter(int) = int;
         end
