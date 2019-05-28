@@ -3,8 +3,9 @@
 % subject_files = location of raw PET data
 % analysis_type = string- generally 'activation' or 'deactivation'
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
+% scans_as_factors = habiation (time series) analysis? 1 = Yes, 0 = No
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, scans_as_factors)
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data
@@ -43,7 +44,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
 
     % Building out array with number of scans in analysis. 
     [rows,cols] = size(all_data);
-    all_data2 = cell(rows*length(subj_images),cols+1);
+    all_data2 = cell(rows*length(subj_images),cols+2);
     
     % Get matrix with scan indices
     scan_index = repmat(subj_images,1,rows);
@@ -69,27 +70,41 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     wb_vol = spm_read_vols(wb);
     wb_location = find(wb_vol == 1);
     
-    % Looping over subjects to get scan data   
+    % Looping over subjects to get scan data
+    empty_contrasts = [];
     for jj = 1:length(all_data2)
         
-        % Getting subject
-        s = cell2char(all_data(jj,1));
-        contrast_number = scan_index(jj);
+        % Getting subject # and what subject image
+        s = cell2char(all_data2(jj,1));
+        n = cell2mat(all_data2(jj,4)); % what scan factor level
+        contrast_number = subj_images(n); % what should the contrast be
         
         % Getting contrast
         contrast = ['con_000',num2str(contrast_number),'.nii'];
                 
-        % Zeroing out data
-        tic
-        zeroing_image([subject_files,'/',s,'/', contrast], wb_location);
-        toc
+        % Checking if image exists. If not, remove from array
+        if exist([subject_files,'/',s,'/', contrast],'file') == 2
+            
+            % Zeroing out data
+            tic
+            zeroing_image([subject_files,'/',s,'/', contrast], wb_location);
+            toc
         
-        % Retrieving file
-        file = [subject_files,'/',s,'/', contrast,',1'];
-        
-        % Placing into cell array
-        all_data{jj,1} = file;
-    end      
+            % Retrieving file
+            file = [subject_files,'/',s,'/', contrast,',1'];
+
+            % Placing into cell array
+            all_data{jj,1} = file;
+            
+        else
+             % If file does not exist, remove from large array
+            empty_contrasts = [empty_contrasts, jj];
+           
+        end
+    end
+    
+    % Clean up unused contrasts
+    all_data2(empty_contrasts,:) = [];
     
     %% Setting Up Flexible Factorial Design
        
@@ -103,12 +118,37 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     matlabbatch{1}.spm.stats.factorial_design.dir = {[analysis_dir,'/',analysis_type]};
     
     % Placing Factors into array
-    for fac = 1:length(factors)
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = cell2char(factors(fac)); 
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).variance = 1; 
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).gmsca = 0; 
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).ancova = 0; 
+    if scans_as_factors == 1
+       
+        % Get number of factors. ncol - 1 to remove subject # as factor
+        [~,ncol] = size(all_data2);
+        nfactor = ncol - 1; 
+        
+        for fac = 1:nfactor
+            
+            % Name of factor - if name has been supplied, use that. If not,
+            % it is 'scan'
+            if fac <= length(factors)
+               matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = cell2char(factors(fac));
+            else
+               matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = 'scan';
+            end
+            
+            % Placing into array
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).variance = 1; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).gmsca = 0; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).ancova = 0;
+        end
+    else
+    
+        for fac = 1:length(factors)
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = cell2char(factors(fac)); 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).variance = 1; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).gmsca = 0; 
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).ancova = 0; 
+        end
     end
     
     % Placing subjects into design
