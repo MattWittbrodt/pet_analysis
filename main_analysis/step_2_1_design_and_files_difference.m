@@ -77,7 +77,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         contrast_number = scan_index(jj);
         
         % Getting contrast
-        contrast = ['con_000',num2str(subj_images),'.nii'];
+        contrast = ['con_000',num2str(contrast_number),'.nii'];
                 
         % Zeroing out data
         tic
