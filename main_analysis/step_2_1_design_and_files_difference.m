@@ -158,7 +158,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     for s = 1:length(all_data)
         
         % Subject ID
-        subject = subjects(s);
+        subject = cell2char(all_data(s,1));
         
         % Isolating the subject and relevant scans
         subj_data_rows = find(~cellfun('isempty',strfind(all_data2(:,ncol),subject)));
