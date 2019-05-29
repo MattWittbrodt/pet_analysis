@@ -155,7 +155,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     end
     
     % Placing subjects into design
-    for s = 1:length(subjects)
+    for s = 1:length(all_data)
         
         % Subject ID
         subject = subjects(s);
