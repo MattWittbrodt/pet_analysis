@@ -78,7 +78,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         % Getting subject # and what subject image
         s = cell2char(all_data2(jj,1));
-        n = cell2mat(all_data2(jj,4)); % what scan factor level
+        n = cell2mat(all_data2(jj,ncol-1)); % what scan factor level
         contrast_number = subj_images(n); % what should the contrast be
         
         % Getting contrast
@@ -183,12 +183,10 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     end
     
     % Identifying Interaction or Main Effect
-    if length(factors) > 1
+    if (length(factors)+scans_as_factors) > 1
         
-        % Getting size of data to calculate factor # (ncol - 2 for subject
-        % and factor #
-        [~,ncol] = size(all_data2);
-        nfactor = ncol - 2;
+        % Getting size of data to calculate factor #
+        nfactor = length(factors)+scans_as_factors;
         
         % Interaction array; adding variables to it
         inter = zeros(1,nfactor);
