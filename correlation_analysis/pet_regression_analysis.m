@@ -56,14 +56,27 @@ else
         cov_data = [];
     end
     
+    % Any empty subjects?
+    no_data = [];
+    
     for sub = 1:length(subj_list)
  
         s = subj_list(sub);
         row_num = find(regressor == s);
  
         % getting the regressor and placing into the covariate structure
-        reg = regressor(row_num, (2:ncol));
-        regressor_data(sub,:) = num2cell(reg);
+        if ncol == 1
+            reg = regressor(row_num, 2);
+        else
+            reg = regressor(row_num, (2:ncol));
+        end
+        
+        % Removing if not present in data
+        if isempty(reg)
+            no_data = [no_data;row_num];
+        else
+            regressor_data(sub,:) = num2cell(reg);
+        end
         
         % adding covariate if specified
         if ~(isempty(cov_data))
@@ -75,44 +88,61 @@ else
         end
         
     end
- 
- 
- 
+    
+    % Removing some subjects without data
+    subj_list(no_data,:) = [];
+  
     %% Step 2: Getting Design Elements (first batch run)
     for con = 1:2
         
+        % Making loop-specific copy of regressor data for missing data
+        regressor_data_tmp = regressor_data;
+        
         if con == 1
-            con_type = 'activation';
+            %con_type = 'activation';
+            con_type = 'math';
         else
-            con_type = 'deactivation';
+            %con_type = 'deactivation';
+            con_type = 'speaking';
         end
  
         % Create array with file paths of scan (1 row per subject) and place into
         % scans batch script
         scan_data = cell(length(subj_list),1); % Open array to place files in
- 
+        no_data = [];
+        
         for sub = 1:length(subj_list)
  
             % Get subject #
             s = subj_list(sub);
  
             % Retrieving file
-            if strcmp(con_type,'activation')
+            if strcmp(con_type,'math')
                 contrast = 'con_0001.nii'; % 001 = activation
                 batch = 1;
             else
-                contrast = 'con_0002.nii'; % 002 = deactivation
+                contrast = 'con_0003.nii'; % 002 = deactivation
                 batch = 2;
             end
             
             % Zeroing out negative values
-            tic
-            zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
-            toc
+            %tic
+            %zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
+            %toc
             
-            file = [data_dir,'/',num2str(s),'/',contrast,',1'];
-            scan_data{sub} = file;
+            % Checking if file exists
+            file = [data_dir,'/',num2str(s),'/',contrast];
+            
+            if exist(file,'file')
+                scan_data{sub} = [file,',1'];
+            else
+                no_data = [no_data,s];
+            end
         end
+        
+        % Removing subjects without data
+        scan_data(no_data) = [];
+        regressor_data_tmp(no_data) = [];
         
         % Identify ouptput directory for .SPM
         initialbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
@@ -163,7 +193,7 @@ else
         SPM = spm_load([output_dir,'/',con_type,'/','SPM.mat']);
         
         % getting logic array: 1 = unique, 0 = not unique
-        unique = spm_SpUtil('IsCon',SPM.SPM.xX.nKX)
+        unique = spm_SpUtil('IsCon',SPM.SPM.xX.nKX);
                
         %% Batch 3 - Contrast
  
