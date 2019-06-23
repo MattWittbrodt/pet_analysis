@@ -39,6 +39,6 @@ create_pet_table <- function(data = "~/Desktop/DARPA_regression/pep_active_vNS_a
   xt <- xtable(df)
   print.xtable(xt, 
                type="html", 
-               file = paste("~/Desktop/",n,".html", sep = ""), include.rownames = F)
+               file = paste("C:/Users/mattw/Desktop/",n,".html", sep = ""), include.rownames = F)
   
 }
