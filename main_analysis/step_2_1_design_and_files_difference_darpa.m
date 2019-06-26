@@ -62,17 +62,28 @@ function matlabbatch = step_2_1_design_and_files_difference_darpa(subjects,subje
     end
     
     %% Adding subjects to design
-    
+    to_remove = [];
     for sub = 1:length(subject_scans)
-        
-        % Adding scans
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(sub).scans = ...
-            subject_scans(sub);
         
         % Adding conditions
         conds = subject_groupings(sub,2:n_contrasts) + 1;
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(sub).conds = conds;            
+                
+        % Checking if there are 0's
+        if sum(isnan(conds) == 0)
+            
+            % Adding scans and conditions
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(sub).scans = ...
+                subject_scans(sub);
+       
+            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(sub).conds = conds;
+        else
+            to_remove = [to_remove,sub];
+        end
+                 
     end
+    
+    % Removing subjects without factor information
+    matlabbatch{1, 1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(to_remove) = [];
     
     %% Finishing out design
     
