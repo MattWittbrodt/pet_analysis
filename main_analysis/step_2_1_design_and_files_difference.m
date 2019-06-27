@@ -9,8 +9,9 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data
+    subject_groupings = median_replace(subject_groupings, covariates);
     subject_groupings(any(isnan(subject_groupings), 2), :) = [];
-
+    
     % Routine to remove subjects in groupings file but no scans
     rows_to_delete = [];
        
@@ -30,7 +31,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Removing rows
     subject_groupings(rows_to_delete,:) = [];
     
-    % Processing factors- if min = 0, SPM will have an erro
+    % Processing factors- if min = 0, SPM will have an error
     [~,ncol] = size(subject_groupings);
     for c = 1:ncol
         if min(subject_groupings(:,c)) == 0
@@ -167,7 +168,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = all_data2(subj_data_rows,ncol);
         
         % Adding factor information
-        if scan_as_factors == 0
+        if scans_as_factors == 0
             subj_conds = all_data2(subj_data_rows,2:ncol-2);
         else
             subj_conds = all_data2(subj_data_rows,2:ncol-1);
