@@ -66,7 +66,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     end
                 
     % Read in whole brain file, get volumes, then get indices = 1 for brain
-    wb = spm_vol('/Volumes/Seagate/DARPA/darpa_roi/wholeBrain.nii');
+    wb = spm_vol('C:/Users/mattw/Documents/Research/roi/wholeBrain.nii');
     wb_vol = spm_read_vols(wb);
     wb_location = find(wb_vol == 1);
     
@@ -167,7 +167,12 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).scans = all_data2(subj_data_rows,ncol);
         
         % Adding factor information
-        subj_conds = all_data2(subj_data_rows,2:ncol-1);
+        if scan_as_factors == 0
+            subj_conds = all_data2(subj_data_rows,2:ncol-2);
+        else
+            subj_conds = all_data2(subj_data_rows,2:ncol-1);
+        end
+        
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = cell2mat(subj_conds); 
 
         % Looping over grouping factors
