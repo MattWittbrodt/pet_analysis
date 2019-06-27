@@ -8,9 +8,12 @@
 function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, scans_as_factors)
     
     %% Getting list of subjects with groupings and scan data
-    % Removing NaN's from data
+    % Removing NaN's from data - first by median replace on covariates then
+    % searching across entire dataframe for NaN's (these will be on main
+    % factors)
+    subject_groupings = median_replace(subject_groupings, covariates);
     subject_groupings(any(isnan(subject_groupings), 2), :) = [];
-
+    
     % Routine to remove subjects in groupings file but no scans
     rows_to_delete = [];
        

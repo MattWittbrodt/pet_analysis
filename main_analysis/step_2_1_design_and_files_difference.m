@@ -5,10 +5,12 @@
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 % scans_as_factors = habiation (time series) analysis? 1 = Yes, 0 = No
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, scans_as_factors)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, covariate_names, scans_as_factors)
     
     %% Getting list of subjects with groupings and scan data
-    % Removing NaN's from data
+    % Removing NaN's from data - first by median replace on covariates then
+    % searching across entire dataframe for NaN's (these will be on main
+    % factors)
     subject_groupings = median_replace(subject_groupings, covariates);
     subject_groupings(any(isnan(subject_groupings), 2), :) = [];
     
@@ -227,7 +229,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         for cov = 1:length(covariates)
             cov_col = 1 + length(factors) + cov;
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).c = cell2mat(all_data2(:,cov_col));
-            matlabbatch{1}.spm.stats.factorial_design.cov(cov).cname = cell2char(covariates(cov));
+            matlabbatch{1}.spm.stats.factorial_design.cov(cov).cname = cell2char(covariate_names(cov));
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).iCFI = 1;
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).iCC = 1;
         end
