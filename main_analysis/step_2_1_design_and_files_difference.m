@@ -116,8 +116,13 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     % Identifying correct directory
     analysis_dir = '';
     s_files = strsplit(subject_files,'/');
-    for l = 2:length(s_files)-1
-        analysis_dir = [analysis_dir,'/',cell2char(s_files(l))];
+    for l = 1:length(s_files)-1
+        
+        if l == 1
+            analysis_dir = [analysis_dir,cell2char(s_files(l))];
+        else
+            analysis_dir = [analysis_dir,'/',cell2char(s_files(l))];
+        end
     end
     
     matlabbatch{1}.spm.stats.factorial_design.dir = {[analysis_dir,'/',analysis_type]};
@@ -171,7 +176,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         % Adding factor information
         if scans_as_factors == 0
-            subj_conds = all_data2(subj_data_rows,2:ncol-2);
+            subj_conds = all_data2(subj_data_rows,2:(2+length(factors)-1));
         else
             subj_conds = all_data2(subj_data_rows,2:ncol-1);
         end
