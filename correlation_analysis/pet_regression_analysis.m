@@ -93,7 +93,7 @@ else
     subj_list(no_data,:) = [];
   
     %% Step 2: Getting Design Elements (first batch run)
-    for con = 1:2
+    for con = 1:3
         
         % Making loop-specific copy of regressor data for missing data
         regressor_data_tmp = regressor_data;
@@ -101,9 +101,11 @@ else
         if con == 1
             %con_type = 'activation';
             con_type = 'math';
-        else
+        elseif con == 2
             %con_type = 'deactivation';
             con_type = 'speaking';
+        else
+            con_type = 'combined';
         end
  
         % Create array with file paths of scan (1 row per subject) and place into
@@ -120,9 +122,12 @@ else
             if strcmp(con_type,'math')
                 contrast = 'con_0001.nii'; % 001 = activation
                 batch = 1;
-            else
+            elseif strcmp(con_type, 'speaking')
                 contrast = 'con_0003.nii'; % 002 = deactivation
                 batch = 2;
+            else
+                contrast = 'con_0005.nii';
+                batch = 3;
             end
             
             % Zeroing out negative values
