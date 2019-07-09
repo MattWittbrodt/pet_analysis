@@ -7,7 +7,7 @@
 function list = dir_to_list(data_dir, output)
     
     % Add path to some utilities
-    addpath('~/Documents/pet_analysis/utilities/');
+    addpath('C:/Users/mattw/Documents/pet_analysis/utilities/');
     
     % Read in data and remove dots
     d = dir(data_dir);
