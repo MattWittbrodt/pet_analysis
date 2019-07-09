@@ -1,13 +1,12 @@
 % Information on variables:
-% subjects_data = directory where subject data lives
-% subject_data = '/Volumes/Seagate/subs'
-% mask_data = '/Volumes/Seagate/kasra/regression/waist/activation/regression_clusters'
-% contrast_name = name of images for the individual; 'con_0001.img' /'con_0001_zeroed.img' is
-% activation, 'con_0002.img' is deactivation.
+% subject_data = location of subject data - '/Volumes/Seagate/subs'
+% mask_data = location of masks for individual clusters
+% '/Volumes/Seagate/kasra/regression/waist/activation/regression_clusters'
+% contrast_name = name of images for the individual - e.g., 'con_0001.img' 
 % regressor_dir = location of .xlsx file with regressor information -
 % assuming col #2 for data and #1 is subject ID
 % output_dir = output directory for .xlsx
-% name for what the variable is called
+% name for what the variable is called - name of text output
 
 function regression_data = regression_cluster_data(subject_data,...
                                                    mask_data, ...
@@ -51,34 +50,37 @@ function regression_data = regression_cluster_data(subject_data,...
             
             % Getting file name, reading in, reading voxels
             sub_data = [subject_data,'/',num2str(s),'/',contrast_name];
-            sub_vol = spm_vol(sub_data);
-            sub_vol_img = spm_read_vols(sub_vol);
             
-            % Loop through the masked areas
-            activation = zeros(length(mask_voxels),1);
+            if exist(sub_data,'file')
+                sub_vol = spm_vol(sub_data);
+                sub_vol_img = spm_read_vols(sub_vol);
+                        
+                % Loop through the masked areas
+                activation = zeros(length(mask_voxels),1);
+
+                for kk = 1:length(mask_voxels)
+
+                    % Get index number for mask
+                    index = mask_voxels(kk);
+
+                    % Place activation from subject into 'activation'
+                    activation(kk) = sub_vol_img(index);
+                end
             
-            for kk = 1:length(mask_voxels)
-                
-                % Get index number for mask
-                index = mask_voxels(kk);
-                
-                % Place activation from subject into 'activation'
-                activation(kk) = sub_vol_img(index);
-            end
-            
-            % Find mean of activation
-            activation_mean = mean(activation);
-            
-            % Place into array
-            regression_data(jj,2+ii) = activation_mean;
-            
-            % Finding regressor
-            row = find(r(:,1) == s);
-            
-            if ~isempty(row)
-                regression_data(jj,2) = r(row,2);
-            else
-                regression_data(jj,2) = NaN;
+                % Find mean of activation
+                activation_mean = mean(activation);
+
+                % Place into array
+                regression_data(jj,2+ii) = activation_mean;
+
+                % Finding regressor
+                row = find(r(:,1) == s);
+
+                if ~isempty(row)
+                    regression_data(jj,2) = r(row,2);
+                else
+                    regression_data(jj,2) = NaN;
+                end
             end
         end
         
