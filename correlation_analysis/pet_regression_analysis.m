@@ -141,7 +141,7 @@ else
             if exist(file,'file')
                 scan_data{sub} = [file,',1'];
             else
-                no_data = [no_data,s];
+                no_data = [no_data,sub];
             end
         end
         
@@ -159,7 +159,7 @@ else
  
         % Place into regression array
         for r = 1:length(regressor_col)
-            initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data(:,r));
+            initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).c = cell2mat(regressor_data_tmp(:,r));
             initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).cname = ['regressor ',num2str(r)];
             initialbatch{1}.spm.stats.factorial_design.des.mreg.mcov(r).iCC = 1; % centered with mean
         end
@@ -185,7 +185,7 @@ else
  
         %% Batch 2 - Model Estimation - Keeping Vanilla for now
         
-        initialbatch{2}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']};
+        initialbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep('Factorial design specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
         initialbatch{2}.spm.stats.fmri_est.write_residuals = 0;
         initialbatch{2}.spm.stats.fmri_est.method.Classical = 1;
         
