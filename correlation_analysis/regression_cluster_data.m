@@ -17,7 +17,7 @@ function regression_data = regression_cluster_data(subject_data,...
                                                    name)
     
     % Add path to some utilities
-    addpath('~/Documents/pet_analysis/utilities/');
+    addpath('C:/Users/mattw/Documents/pet_analysis/utilities/');
     
     % Read in subject data
     sub = dir_to_list(subject_data, 'numeric');
