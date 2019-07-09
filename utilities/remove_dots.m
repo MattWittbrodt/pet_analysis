@@ -11,7 +11,11 @@ function removed = remove_dots(x)
            to_remove = [to_remove, ii];
         end
         
-        if sum(strfind(x(ii).name,'~$')) == 1
+        if strfind(x(ii).name,'~$') > 1
+           to_remove = [to_remove, ii];
+        end
+        
+        if strfind(x(ii).name,'.txt') > 1
            to_remove = [to_remove, ii];
         end
     end
