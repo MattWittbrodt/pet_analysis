@@ -101,12 +101,12 @@ for ii=1:length(subjects)
             mask_data = zeros(1,length(masks(jj).vols_in_cluster));
         
             for kk=1:length(masks(jj).vols_in_cluster)
-                if s_img(masks(jj).vols_in_cluster(kk)) >= 0
+                if s_img(masks(jj).vols_in_cluster(kk)) > 0
                    mask_data(kk) = s_img(masks(jj).vols_in_cluster(kk));
                 end
             end
             
-            %Mean of mask data
+            % Mean of mask data
             mean_activation = [];
             
             if mean(mask_data) > 0
