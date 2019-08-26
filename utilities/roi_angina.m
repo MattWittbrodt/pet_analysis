@@ -36,7 +36,7 @@ for ii=1:length(masks)
     mask_location = zeros(1,sum(roi_img(:) == 1));
     mask_count = 1;
     
-    % Seeing if the area contains any significantly active clusters
+    % Getting index/location of each ROI within the brain
     for jj=1:(79*95*68)
         if roi_img(jj) == 1
             mask_location(mask_count) = jj;
@@ -47,7 +47,7 @@ for ii=1:length(masks)
     % Place into structure
     masks(ii).vol_location = mask_location;
     
-    % Looping over mask locations to see if there is anything in cluster
+    % Looping over ROI locations to see if there is anything in cluster
     for jj=1:length(mask_location)
         if cluster_data_img(mask_location(jj)) == 0
             mask_location(jj) = 0;
@@ -106,11 +106,11 @@ for ii=1:length(subjects)
                 end
             end
             
-            %Mean of mask data
+            % Mean of mask data
             mean_activation = [];
             
             if mean(mask_data) > 0
-                mean_activation = mean(mask_data(mask_data > 0));
+                mean_activation = median(mask_data(mask_data > 0));
             else
                 mean_activation = 0;
             end
