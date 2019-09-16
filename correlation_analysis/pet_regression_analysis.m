@@ -23,8 +23,8 @@ regressor = xlsread(regressor_file);
  
 % Remove missing NaN
 regressor = rmmissing(regressor(:,[1,regressor_col, cov_col]));
-[~,ncol] = size(regressor);
-ncol = ncol - 1; % correcting for Cov_col on the end
+%[~,ncol] = size(regressor);
+%ncol = ncol - 1; % correcting for Cov_col on the end
 
 % Running equivalency check - removing subjects without regressor data
 remove_subjects = [];
@@ -65,10 +65,11 @@ else
         row_num = find(regressor == s);
  
         % getting the regressor and placing into the covariate structure
-        if ncol == 1
-            reg = regressor(row_num, 2);
+        regressor_num = length(regressor_col);
+        if regressor_num == 1
+            reg = regressor(row_num, 2); % from above, regressor is second column
         else
-            reg = regressor(row_num, (2:ncol));
+            reg = regressor(row_num, (2:(regressor_num+1)));
         end
         
         % Removing if not present in data
@@ -82,7 +83,7 @@ else
         if ~(isempty(cov_data))
             
             for c = 1:length(cov_col)
-                cov = regressor(row_num, 2+c);
+                cov = regressor(row_num, (1+regressor_num+c));
                 cov_data(sub,c) = num2cell(cov);
             end
         end
