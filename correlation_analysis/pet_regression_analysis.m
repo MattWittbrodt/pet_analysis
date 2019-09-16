@@ -149,6 +149,7 @@ else
         % Removing subjects without data
         scan_data(no_data) = [];
         regressor_data_tmp(no_data) = [];
+        cov_data(no_data,:) = [];
         
         % Identify ouptput directory for .SPM
         initialbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
