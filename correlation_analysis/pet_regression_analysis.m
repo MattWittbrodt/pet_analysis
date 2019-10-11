@@ -94,10 +94,11 @@ else
     subj_list(no_data,:) = [];
   
     %% Step 2: Getting Design Elements (first batch run)
-    for con = 1:3
+    for con = 1:4
         
-        % Making loop-specific copy of regressor data for missing data
+        % Making loop-specific copy of regressor data and scan data for missing data
         regressor_data_tmp = regressor_data;
+        cov_data_tmp = cov_data;
         
         if con == 1
             %con_type = 'activation';
@@ -105,8 +106,10 @@ else
         elseif con == 2
             %con_type = 'deactivation';
             con_type = 'speaking';
-        else
+        elseif con == 3
             con_type = 'combined';
+        else
+            con_type = 'baseline';
         end
  
         % Create array with file paths of scan (1 row per subject) and place into
@@ -126,9 +129,12 @@ else
             elseif strcmp(con_type, 'speaking')
                 contrast = 'con_0003.nii'; % 002 = deactivation
                 batch = 2;
-            else
+            elseif strcmp(con_type, 'combined')
                 contrast = 'con_0005.nii';
                 batch = 3;
+            else 
+                contrast = 'con_0007.nii';
+                batch = 4;
             end
             
             % Zeroing out negative values
@@ -149,7 +155,7 @@ else
         % Removing subjects without data
         scan_data(no_data) = [];
         regressor_data_tmp(no_data) = [];
-        cov_data(no_data,:) = [];
+        cov_data_tmp(no_data,:) = [];
         
         % Identify ouptput directory for .SPM
         initialbatch{1}.spm.stats.factorial_design.dir = {[output_dir,'/',con_type]};
@@ -169,7 +175,7 @@ else
         %% Step 4: Adding covariates (nuscience variables)
         
         for c = 1:length(cov_col) 
-            initialbatch{1}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data(:,c));
+            initialbatch{1}.spm.stats.factorial_design.cov(c).c = cell2mat(cov_data_tmp(:,c));
             initialbatch{1}.spm.stats.factorial_design.cov(c).cname = ['covariate_',num2str(c)];
             initialbatch{1}.spm.stats.factorial_design.cov(c).iCFI = 1; % no interaction
             initialbatch{1}.spm.stats.factorial_design.cov(c).iCC = 1; % overall mean
@@ -187,7 +193,7 @@ else
  
         %% Batch 2 - Model Estimation - Keeping Vanilla for now
         
-        initialbatch{2}.spm.stats.fmri_est.spmmat(1) = cfg_dep('Factorial design specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+        initialbatch{2}.spm.stats.fmri_est.spmmat = {[output_dir,'/',con_type,'/','SPM.mat']}; %cfg_dep('Factorial design specification: SPM.mat File', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
         initialbatch{2}.spm.stats.fmri_est.write_residuals = 0;
         initialbatch{2}.spm.stats.fmri_est.method.Classical = 1;
         
