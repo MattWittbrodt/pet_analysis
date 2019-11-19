@@ -4,14 +4,15 @@
 % '/Volumes/Seagate/kasra/regression/waist/activation/regression_clusters'
 % contrast_name = name of images for the individual - e.g., 'con_0001.img' 
 % regressor_dir = location of .xlsx file with regressor information -
-% assuming col #2 for data and #1 is subject ID
+% regressor_col - what column holds data (assumes col #1 is subject ID)
 % output_dir = output directory for .xlsx
 % name for what the variable is called - name of text output
 
 function regression_data = regression_cluster_data(subject_data,...
                                                    mask_data, ...
                                                    contrast_name,...
-                                                   regressor_dir,...
+                                                   regressor_file,...
+                                                   regressor_col,...
                                                    output_dir,...
                                                    name)
     
@@ -28,7 +29,7 @@ function regression_data = regression_cluster_data(subject_data,...
     regression_data = zeros(length(sub),(2+length(m)));
     
     % Load regressor file
-    r = xlsread(regressor_dir);
+    r = xlsread(regressor_file);
     
     % Initiate Loop over masks
     for ii = 1:length(m)
@@ -77,7 +78,7 @@ function regression_data = regression_cluster_data(subject_data,...
                 row = find(r(:,1) == s);
 
                 if ~isempty(row)
-                    regression_data(jj,2) = r(row,2);
+                    regression_data(jj,2) = r(row,regressor_col);
                 else
                     regression_data(jj,2) = NaN;
                 end
