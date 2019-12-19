@@ -2,6 +2,7 @@
 % subject groupings = array with subject IDs and groupings
 % subject_files = location of raw PET data
 % analysis_type = string- generally 'activation' or 'deactivation'
+% covariates = double with indices of subject groupings
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 % scans_as_factors = habiation (time series) analysis? 1 = Yes, 0 = No
 
