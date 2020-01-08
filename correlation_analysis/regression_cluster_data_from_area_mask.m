@@ -1,6 +1,6 @@
 % Information on variables:
 % subject_data = location of subject data - '/Volumes/Seagate/subs'
-% mask_data = location of masks for individual clusters
+% area_mask = location and name of .nii mask for area
 % '/Volumes/Seagate/kasra/regression/waist/activation/regression_clusters'
 % contrast_name = name of images for the individual - e.g., 'con_0001.img' 
 % regressor_dir = location of .xlsx file with regressor information -
@@ -8,8 +8,9 @@
 % output_dir = output directory for .xlsx
 % name for what the variable is called - name of text output
 
-function regression_data = regression_cluster_data_from_area_mask(subject_data,...
-                                                   mask_data, ...
+function regression_data = regression_cluster_data_from_area_mask(...
+                                                   subject_data,...
+                                                   area_mask, ...
                                                    contrast_name,...
                                                    regressor_file,...
                                                    regressor_col,...
@@ -23,7 +24,7 @@ function regression_data = regression_cluster_data_from_area_mask(subject_data,.
     sub = dir_to_list(subject_data, 'numeric');
     
     % Masks into cell array
-    m = dir_to_list(mask_data, 'string'); 
+    m = dir_to_list(area_mask, 'string'); 
 
     % Loop through masks to get data
     regression_data = zeros(length(sub),(2+length(m)));
@@ -36,7 +37,7 @@ function regression_data = regression_cluster_data_from_area_mask(subject_data,.
         
         % Read in mask, get header, then the 3D matrix with 0 & 1, then
         % index of 1's
-        mask = [mask_data,'/',str2mat(m(ii))];
+        mask = [area_mask,'/',str2mat(m(ii))];
         mask = spm_vol(mask);
         mask_img = spm_read_vols(mask);
         mask_voxels = find(mask_img);
