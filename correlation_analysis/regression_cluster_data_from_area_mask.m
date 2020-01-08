@@ -8,6 +8,7 @@
 % regressor_col - what column holds data (assumes col #1 is subject ID)
 % output_dir = output directory for .xlsx
 % name for what the variable is called - name of text output
+% write = number whether we want to write the file; 1 = Yes, 0 = No
 
 function output_data = regression_cluster_data_from_area_mask(...
                                                    subject_data,...
@@ -17,7 +18,8 @@ function output_data = regression_cluster_data_from_area_mask(...
                                                    regressor_file,...
                                                    regressor_col,...
                                                    output_dir,...
-                                                   name)
+                                                   name,...
+                                                   write)
     
     % Add path to some utilities
     addpath('C:/Users/mattw/Documents/pet_analysis/utilities/');
@@ -81,7 +83,7 @@ function output_data = regression_cluster_data_from_area_mask(...
             output_data(jj,2) = activation_mean;
 
             % Finding regressor if this is regression analysis
-            if regression == 1:
+            if regression == 1
                 
                 row = find(r(:,1) == s);
 
@@ -92,31 +94,37 @@ function output_data = regression_cluster_data_from_area_mask(...
                 end
             end
         end
-    
-    % writing getting column header into a cell array
-    col_header = transpose(["subject"; string(name); m]);
-    col_header = convertStringsToChars(col_header);
-    
-    combined_df = [col_header; num2cell(output_data)];
-    
-    %csvwrite([output_dir,'/',name,'.csv'], combined_df);
-    % Opening text file
-    fid = fopen([output_dir,'/',name,'.txt'], 'w');
-    
-    [nrows,ncols] = size(combined_df);
-    
-    for row = 1:nrows
-        if row == 1
-           for col = 1:ncols
-                fprintf(fid,'%s,',combined_df{row,col});
-           end
-        else
-            for col = 1:ncols
-                fprintf(fid,'%d,',combined_df{row,col});
+        
+    %% If we want to write out a file, proceede
+    if write == 1
+        % writing getting column header into a cell array
+        col_header = transpose(["subject"; string(name)]);
+        col_header = convertStringsToChars(col_header);
+
+        combined_df = [col_header; num2cell(output_data)];
+
+        %csvwrite([output_dir,'/',name,'.csv'], combined_df);
+        % Opening text file
+        fid = fopen([output_dir,'/',name,'.txt'], 'w');
+
+        [nrows,ncols] = size(combined_df);
+
+        for row = 1:nrows
+            if row == 1
+               for col = 1:ncols
+                    fprintf(fid,'%s,',combined_df{row,col});
+               end
+            else
+                for col = 1:ncols
+                    fprintf(fid,'%d,',combined_df{row,col});
+                end
             end
+            fprintf(fid,'\n');
         end
-        fprintf(fid,'\n');
+
+
     end
-    
-    
+
+end
+
 end
