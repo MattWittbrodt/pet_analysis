@@ -9,7 +9,7 @@
 % output_dir = output directory for .xlsx
 % name for what the variable is called - name of text output
 
-function output_data = regression_cluster_data_from_area_mask(...
+function regression_data = regression_cluster_data_from_area_mask(...
                                                    subject_data,...
                                                    area_mask, ...
                                                    contrast_name,...
@@ -31,14 +31,10 @@ function output_data = regression_cluster_data_from_area_mask(...
     % Loop through masks to get data
     if regression == 1
         
-        output_data = zeros(length(sub),(2+length(m)));
+        regression_data = zeros(length(sub),(2+length(m)));
         
         % Load regressor file
         r = xlsread(regressor_file);
-        
-    else
-        % If no regression, just make a simple 2d array
-        output_data = zeros(length(sub),2);
     end
     
     % Read in mask, get header, then the 3D matrix with 0 & 1, then
@@ -53,7 +49,7 @@ function output_data = regression_cluster_data_from_area_mask(...
         s = sub(jj);
             
         % Addind subject number to array
-        output_data(jj,1) = s;
+        regression_data(jj,1) = s;
             
         % Getting file name, reading in, reading voxels
         sub_data = [subject_data,'/',num2str(s),'/',contrast_name];
@@ -78,18 +74,16 @@ function output_data = regression_cluster_data_from_area_mask(...
             activation_mean = mean(activation);
 
             % Place into array
-            output_data(jj,2) = activation_mean;
+            regression_data(jj,2+ii) = activation_mean;
 
-            % Finding regressor if this is regression analysis
-            if regression == 1:
-                
-                row = find(r(:,1) == s);
+            % Finding regressor
+            row = find(r(:,1) == s);
 
-                if ~isempty(row)
-                    output_data(jj,3) = r(row,regressor_col);
-                else
-                    output_data(jj,3) = NaN;
-                end
+            if ~isempty(row)
+                regression_data(jj,2) = r(row,regressor_col);
+            else
+                regression_data(jj,2) = NaN;
+            end
             end
         end
     
@@ -97,7 +91,7 @@ function output_data = regression_cluster_data_from_area_mask(...
     col_header = transpose(["subject"; string(name); m]);
     col_header = convertStringsToChars(col_header);
     
-    combined_df = [col_header; num2cell(output_data)];
+    combined_df = [col_header; num2cell(regression_data)];
     
     %csvwrite([output_dir,'/',name,'.csv'], combined_df);
     % Opening text file
