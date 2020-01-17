@@ -112,7 +112,7 @@ else
             con_type = 'baseline';
         end
         
-        fprintf('Contrast tpye: %s/n',con_type)
+        fprintf('Contrast tpye: %s\n',con_type)
         pause(1)
  
         % Create array with file paths of scan (1 row per subject) and place into
