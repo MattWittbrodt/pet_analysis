@@ -111,6 +111,9 @@ else
         else
             con_type = 'baseline';
         end
+        
+        fprintf('Contrast tpye: %s/n',con_type)
+        pause(1)
  
         % Create array with file paths of scan (1 row per subject) and place into
         % scans batch script
@@ -137,8 +140,6 @@ else
                 batch = 4;
             end
             
-            fprintf('Contrast tpye: %s/n',con_type)
-            pause(1)
             % Zeroing out negative values
             %tic
             %zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
