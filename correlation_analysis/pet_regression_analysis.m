@@ -2,7 +2,7 @@
 % subjects = file with all of the subject groupings and covariates of
 % interst
 % contrast_type = character with either 'activation' or 'deactivation'
-% data_dir = brain activation network
+% data_dir = directory where individual data scans are
 % subj_list = list of subjects to be included within the analysis
 % cov_col = column in excel file with column for covariate - if none, empty
 % wb = whole brain- an indexed double with all brain locations
@@ -137,6 +137,8 @@ else
                 batch = 4;
             end
             
+            fprintf('Contrast tpye: %s/n',con_type)
+            pause(1)
             % Zeroing out negative values
             %tic
             %zeroing_image([data_dir,'/',num2str(s),'/',contrast], wb);
