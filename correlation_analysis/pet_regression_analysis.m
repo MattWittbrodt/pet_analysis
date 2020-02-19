@@ -127,13 +127,13 @@ else
  
             % Retrieving file
             if strcmp(con_type,'math')
-                contrast = 'con_0001.nii'; % 001 = activation
+                contrast = 'con_0002.nii'; % 001 = activation
                 batch = 1;
             elseif strcmp(con_type, 'speaking')
-                contrast = 'con_0003.nii'; % 002 = deactivation
+                contrast = 'con_0004.nii'; % 003 = activation
                 batch = 2;
             elseif strcmp(con_type, 'combined')
-                contrast = 'con_0005.nii';
+                contrast = 'con_0006.nii';
                 batch = 3;
             else 
                 contrast = 'con_0007.nii';
