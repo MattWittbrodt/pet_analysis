@@ -4,7 +4,7 @@
 % name of new image (include path)
 % return_binary = 1 = yes, 0 = No
 
-function gauss_filter_brain(name_of_image, sigma, name_of_new_image, return_binary)
+function gauss = gauss_filter_brain(name_of_image, sigma, name_of_new_image, return_binary)
 
 %% Reading in image
 img = spm_vol(name_of_image);
@@ -19,13 +19,12 @@ img.fname = name_of_new_image;
 
 %% If needing a binary brain, doing so
 if return_binary == 1
-   img_vol_gauss(img_vol_gauss > 0) = 1; 
-end
+   img_vol_gauss(img_vol_gauss > 0) = 1;
 
-%% Writing Output
-spm_write_vol(img, img_vol_gauss);
+    
 
 end
+
 
 
 
