@@ -12,6 +12,8 @@ img_vol = spm_read_vols(img);
 
 %% Doing filtering (first need to remove NA from data)
 img_vol(isnan(img_vol)) = 0;
+%img_vol(avg_img < 0.1) = 0; %zeroing based on the average activation image
+img_vol(img_vol < 2.3) = 0;
 img_vol_gauss = imgaussfilt3(img_vol, sigma);
 
 %% Changing output name
