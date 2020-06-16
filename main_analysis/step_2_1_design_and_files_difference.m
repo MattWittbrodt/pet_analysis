@@ -193,7 +193,16 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             end
             
         else
-            subj_conds = all_data2(subj_data_rows,2:ncol-1);
+            
+            % Removing covariates from columns
+            factor_cols = 2:ncol-1;
+            if ~isempty(covariates)
+                for cv = 1:length(covariates)
+                    factor_cols = factor_cols(factor_cols ~= covariates(cv));
+                end
+            end
+            
+            subj_conds = all_data2(subj_data_rows,factor_cols);
         end
         
         matlabbatch{1}.spm.stats.factorial_design.des.fblock.fsuball.fsubject(s).conds = cell2mat(subj_conds); 
