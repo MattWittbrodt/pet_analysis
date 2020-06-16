@@ -5,8 +5,9 @@
 % covariates = double with indices of subject groupings
 % factors = what are the factors. Equal to n columns - 1 from subject_groupings 
 % scans_as_factors = habiation (time series) analysis? 1 = Yes, 0 = No
+% subject_as_factor = are subjects treated as a factor (preferred)? 1 = Yes, 0 = No
 
-function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, covariate_names, scans_as_factors)
+function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_groupings, subject_files, analysis_type, factors, subj_images, covariates, covariate_names, scans_as_factors, subject_as_factor)
     
     %% Getting list of subjects with groupings and scan data
     % Removing NaN's from data - first by median replace on covariates then
@@ -129,12 +130,18 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     matlabbatch{1}.spm.stats.factorial_design.dir = {[analysis_dir,'/',analysis_type]};
     
     % Placing Factors into array
+    
+    % First, are subjects factors?
+    if subject_as_factor == 1
+        factors = [{'subject'},factors];
+    end
+
     if scans_as_factors == 1
        
         % Get number of factors. ncol - 2 to remove subject # as factor and
         % string with subject scan data
         [~,ncol] = size(all_data2);
-        nfactor = ncol - 2;
+        nfactor = ncol - 2 - length(covariates);
         
         for fac = 1:nfactor
             
@@ -142,12 +149,13 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
             % it is 'scan'
             if fac <= length(factors)
                matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = cell2char(factors(fac));
+               matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
             else
                matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).name = 'scan';
+               matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 1; 
             end
             
             % Placing into array
-            matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).dept = 0; 
             matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).variance = 1; 
             matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).gmsca = 0; 
             matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac(fac).ancova = 0;
@@ -177,7 +185,13 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         
         % Adding factor information
         if scans_as_factors == 0
-            subj_conds = all_data2(subj_data_rows,2:(2+length(factors)-1));
+            if subject_as_factor == 1
+                subj_conds = s;
+                subj_conds = [subj_conds, all_data2(subj_data_rows,2:(2+length(factors)-2))];
+            else
+                subj_conds = all_data2(subj_data_rows,2:(2+length(factors)-1));
+            end
+            
         else
             subj_conds = all_data2(subj_data_rows,2:ncol-1);
         end
@@ -197,7 +211,7 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     end
     
     % Identifying Interaction or Main Effect
-    if (length(factors)+scans_as_factors) > 1
+    if (length(factors)+scans_as_factors-subject_as_factor) > 1
         
         % Getting size of data to calculate factor #
         nfactor = length(factors)+scans_as_factors;
@@ -225,15 +239,20 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
         end
         
     else
+        
         % If only one factor, use main effects
-        matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1;
-    
+        if subject_as_factor == 1
+             matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1;
+             %matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{2}.fmain.fnum = 2; 
+        else
+             matlabbatch{1}.spm.stats.factorial_design.des.fblock.maininters{1}.fmain.fnum = 1;
+        end
     end
     
     % Covariate
     if ~isempty(covariates)
         for cov = 1:length(covariates)
-            cov_col = 1 + length(factors) + cov;
+            cov_col = 1 + length(factors) - subject_as_factor + cov;
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).c = cell2mat(all_data2(:,cov_col));
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).cname = cell2char(covariate_names(cov));
             matlabbatch{1}.spm.stats.factorial_design.cov(cov).iCFI = 1;
