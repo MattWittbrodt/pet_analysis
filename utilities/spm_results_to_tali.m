@@ -2,10 +2,16 @@
 %%% Converting into table and exporting to comma deliminted .txt
 %%% Results = structure from SPM; jar_path = path to .jar file
 %%% output_name = string: location and name of output file (make sure to add .txt)
-%%% jar_path = where is the taliarach.jar file (string must include the
+%%% opt - does the default location of talairach.jar change from the default? jar_path = where is the taliarach.jar file (string must include the
 %%% file
 
-function spm_results_to_tali(results, output_name, jar_path)
+function spm_results_to_tali(results, output_name, opt)
+
+    %% Is there a custom string for the talairach.jar?
+    jar_path = 'C:/Users/mattw/Documents/talairach.jar';
+    if exist('opt')
+        jar_path = opt;
+    end
     
     %% Getting data and adding X,Y, and Z columns
     data = results.dat;
@@ -138,6 +144,8 @@ function spm_results_to_tali(results, output_name, jar_path)
         
     
     end
+    
+    fclose('all');
     
 end
 
