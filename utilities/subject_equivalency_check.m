@@ -5,7 +5,7 @@
 
 function [subj,file] = subject_equivalency_check(groupings, files)
     
-    if length(groupings) < length(files)
+    %if length(groupings) < length(files)
         % First, checking for subjects with files that we have grouping information for 
         to_remove = [];
         for ii = 1:length(groupings)
@@ -48,7 +48,7 @@ function [subj,file] = subject_equivalency_check(groupings, files)
         % Remove
         new_files = files;
         new_files(to_remove) = [];
-    
+          
     subj = new_subject_groupings;
     file = new_files;
 end
