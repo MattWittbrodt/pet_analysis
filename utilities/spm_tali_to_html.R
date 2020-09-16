@@ -24,7 +24,9 @@ create_pet_table <- function(data = "~/Desktop/DARPA_regression/pep_active_vNS_a
               Area = ifelse(cerebellum_presence == T | str_detect(X.1, "Sub-lobar"), hemisphere_lobe,
                             paste(hemisphere_lobe, X.2, sep = ", "))) %>%
       select(-X, -X.1, -X.2, -X.4, -hemisphere, -cerebellum_presence, -hemisphere_lobe)
-            
+  
+  print('We are done with the table processing')
+  
   # rearranging order for table
   df <- s %>%
         select(equivk,Area,Brodmann_Area,X_Tal,Y_Tal,Z_Tal,equivZ)
