@@ -147,5 +147,8 @@ function spm_results_to_tali(results, output_name, opt)
     
     fclose('all');
     
+    %% Running the R HTML Script
+    fprintf('!Rscript C:/Users/mattw/Documents/pet_analysis/utilities/html_creation_in_R.R %s \n', output_name); 
+        
 end
 
