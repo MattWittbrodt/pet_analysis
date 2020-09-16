@@ -1,0 +1,38 @@
+WARNING: unknown option '-sham_greater_active_hypo_0025.txt'
+
+
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> #!/usr/bin/env Rscript
+> args = commandArgs(trailingOnly=TRUE)
+> 
+> "We have loaded the script"
+[1] "We have loaded the script"
+> 
+> source("C:/Users/mattw/Documents/pet_analysis/utilities/spm_tali_to_html.R")
+> 
+> #create_pet_table(args[1])
+> 
+> #print(paste0("We have completed the script with the input file of: ", args[1]))
+> 
+> proc.time()
+   user  system elapsed 
+   0.12    0.01    0.14 
