@@ -49,7 +49,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         test = scan_available == ii;
         if sum(test) < 1
             contrast_matrix(:,ii) = NaN;
-            fprintf(fileID,'Subject %s has no scans for condition %d/n',subject,ii);
+            fprintf(fileID,'Subject %s has no scans for condition %d',subject,ii);
             fprintf(fileID,'\n');
         end
     end
@@ -64,7 +64,7 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
         
         if s ~= contrast_sum(ii) || m < 1
            contrast_matrix(ii,:) = NaN;
-           fprintf(fileID,'Subject %s has no contrast %d/n',subject,ii);
+           fprintf(fileID,'Subject %s has no contrast %d',subject,ii);
            fprintf(fileID,'\n');
         end
     end
