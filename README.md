@@ -2,6 +2,7 @@
 
 ## Table of Contents
 1. [General Function](#general_function)
+2. [Pre-Processing Pipeline](#pre_processing)
 
 ## General function of code <a name="general_function"></a>
 The code is separated into two main components: data cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
@@ -26,7 +27,7 @@ File/Folder | Completed
 **pre_processing**|
 ```step_1_1_realign_and_estimate.m```|
 
-### Pre-Processing Pipeline
+### Pre-Processing Pipeline <a name="pre_processing"></a>
 **Step 1** is a set of functions which will automate the pre-processing steps. They are labeled with ```step_1_n``` where ```n``` is a sub-step of pre_processing. Exact details can be found within the ```.m``` file itself, but a summary of the 'design choices' will be presented along with a quick description. 
 
 #### ```step_1_1_realign_and_estimate.m```: 
