@@ -18,8 +18,35 @@ main_analysis |
 pre_processing |
 utilities | Functions to help ease import of directories and small processing tasks
 
+## General Set Up for PET analysis
+The two main folders needed for PET analysis are in ```pre_processing``` and ```main_analysis```. Additionally, for each study, there are a few files and a pipeline needed. Below is a quick checklist for setting up a new study. The functions below will be described in more detail.
 
-## Specific functions/scripts within each folder
+File/Folder | Completed
+------------|------------
+**pre_processing**|
+```step_1_1_realign_and_estimate.m```|
+
+### Pre-Processing Pipeline
+**Step 1** is a set of functions which will automate the pre-processing steps. They are labeled with ```step_1_n``` where ```n``` is a sub-step of pre_processing. Exact details can be found within the ```.m``` file itself, but a summary of the 'design choices' will be presented along with a quick description. 
+
+#### ```step_1_1_realign_and_estimate.m```: 
+Arguments | Description
+---|---
+x| character of subject name - in my pipelines I extracted from data folders, so it reflected name of folder
+y| path where individual subject data goes
+
+**Function Returns:** Average image file for subject with the suffix, ```realigned_summed```
+
+This function is essentially the image calculator utility from SPM. It starts by looking for all the raw PET files (.nii) in the subject folder. It loads all the files, creates an **average image** based on the scans available using an expression customized to the number of files for the estimation (e.g., if 3 scans: (Scan1 + Scan2 + Scan3)/ 3). 
+
+This function uses the default variables, but in case they change in new SPM versions, they are:
+* Data Matrix: No - don't read images into matrix
+* No implicit zero mask
+* Tri-linear interpretation
+* INT16 data type
+
+
+###  Specific functions/scripts within each folder
 
 
 ## Utilities
