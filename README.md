@@ -46,6 +46,19 @@ This function uses the default variables, but in case they change in new SPM ver
 * Tri-linear interpretation
 * INT16 data type
 
+#### ```step_1_2_normalize.m```: 
+Arguments | Description
+---|---
+x| character of subject name - in my pipelines I extracted from data folders, so it reflected name of folder
+y| path where individual subject data goes
+z| path to a template image - in this case '[location of MATLAB installation]/MATLAB/spm8/templates/PET.nii,1'
+
+**Function Returns:** Copy of the raw data with a ```w``` prefix.
+
+This function will run the image normalization step ('Old Normalize Estimate and Write' in SPM12). First, the individual scans are read in (.img files). Second, the mean image from step_1_1 (.nii file) is brought in. 
+
+All default options are selected. In case they change, the screenshot below details the options.  
+![normalize_options](manual_screenshots/normalize_options.png)
 
 ###  Specific functions/scripts within each folder
 
