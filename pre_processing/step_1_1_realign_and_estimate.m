@@ -1,3 +1,8 @@
+% params:
+% x = string of subject ID (generally, name of folder)
+% y = string of folder path
+
+
 function matlabbatch = step_1_1_realign_and_estimate(x,y)
 
 %% First - create cell array with files
