@@ -1,3 +1,8 @@
+% Arguments
+% x = subject
+% y = subject_dir (string to location)
+% z = template_image (string to location)
+
 function matlabbatch = step_1_2_normalize(x,y,z)
 
 %%% Step 3 - Normalize
