@@ -26,6 +26,8 @@ File/Folder | Completed
 ------------|------------
 **pre_processing**|
 ```step_1_1_realign_and_estimate.m```|
+```step_1_2_normalize.m```|
+```step_1_3_smooth.m```|
 
 ### Pre-Processing Pipeline <a name="pre_processing"></a>
 **Step 1** is a set of functions which will automate the pre-processing steps. They are labeled with ```step_1_n``` where ```n``` is a sub-step of pre_processing. Exact details can be found within the ```.m``` file itself, but a summary of the 'design choices' will be presented along with a quick description. 
@@ -59,6 +61,16 @@ This function will run the image normalization step ('Old Normalize Estimate and
 
 All default options are selected. In case they change, the screenshot below details the options.  
 ![normalize_options](manual_screenshots/normalize_options.png)
+
+#### ```step_1_3_smooth.m```: 
+Arguments | Description
+---|---
+x| character of subject name - in my pipelines I extracted from data folders, so it reflected name of folder
+y| path where individual subject data goes
+
+**Function Returns:** Smoothed version of each scan with a ```sw``` prefix.
+
+This function is will read in the ```w``` prefix image file from normalization step and smooth it. This function uses a [5 5 5] full width half maximum Gaussian smoothing kernal with SAME data tyle and no implicit masking. The filename prefix is set as ```s```.
 
 ###  Specific functions/scripts within each folder
 
