@@ -1,3 +1,7 @@
+% Arguments
+% x = string of subject ID (generally, name of folder)
+% y = string of folder path
+
 function matlabbatch = step_1_3_smooth(x,y)
 
 %%% Step 4 - Smooth
