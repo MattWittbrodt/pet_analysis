@@ -3,6 +3,7 @@
 ## Table of Contents
 1. [General Function](#general_function)
 2. [Pre-Processing Pipeline](#pre_processing)
+3. [Example Pre-Processing Set Up](#ex_pre)
 
 ## General function of code <a name="general_function"></a>
 The code is separated into two main components: data cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
@@ -89,6 +90,7 @@ This is the 'main' function within the individual data pre-processing. Important
 
 The ```var``` argument, noted above, indicates whether the variance in the factor (the second column of ```scan_characteristics```) is equal or unequal. By default, we want this to be true. However, some individual models will fail with this specification. Therefore, in order to avoid this, the function is called twice in the pre-processing pipeline with a ```try-catch``` sequence. This will try the model using equal variance (var = 1) and if not, try the model with unequal variance (var = 0). This specification is found in the line: ```matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = var;```. If there are further errors, this will be returned in a variable ```errors``` printed to the workspace. It is advised to look at this after running all participants through the pipeline.
 
+## Example Pre-Processing Stream <a name="ex_pre"></a>
 
 
 ###  Specific functions/scripts within each folder
