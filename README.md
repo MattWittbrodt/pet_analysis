@@ -92,9 +92,64 @@ The ```var``` argument, noted above, indicates whether the variance in the facto
 
 ## Example Pre-Processing Stream <a name="ex_pre"></a>
 
+This section will demonstrate how to use the `step_1_pre_processing_shell.m` for any study. 
+
+### Sourcing Files
+`clear; 
+addpath(genpath('PATH TO PET_ANALYSIS LIBRARY'));`
+
+Replace the string with the location of the pet_analysis folder from this Git repository. 
+
+### Naming the relevant directories and initializing jobman
+Here, we are telling the script where important files are.
+
+`subj_files = 'SUBJECT_DATA_LOCATION;`
+This is the location of the raw files live (eg. `'C:/Users/mattw/Documents/Research/darpa/data/subject_data_regression/'`). They should be converted (using Jon's script) from the `.v` file and are generally named: `[subj#]_w[scan#]_[date and maybe other info]` and will have a `.img` (image) and `.hdr` (header) file. Make sure each scan has two files. Nothing else should be in the folder. For the original DARPA study, if a participant completed the entire protocol (14 scans), this folder would have 28 files and that is all. Anything else in this folder may break the script. Additionally, the script is set up to run with the data in this format. If the data is not in this format, the script may break. 
+
+`ind_contrasts_file = 'C:/Users/mattw/Documents/Research/darpa/script_files/habituation_contrasts.xlsx';`
+
+
 
 ###  Specific functions/scripts within each folder
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Utilities
 ```dir to list```: Takes in a directory (data_dir) and will output a list of all the directories in that list. Useful for getting individual subject lists from folders in a directory. Output can take a couple of formats depending on what is needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
