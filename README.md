@@ -4,6 +4,7 @@
 1. [General Function](#general_function)
 2. [Pre-Processing Pipeline](#pre_processing)
 3. [Example Pre-Processing Set Up](#ex_pre)
+3.1 [Individual Contrast Set Up](#ind_set_up)
 
 ## General function of code <a name="general_function"></a>
 The code is separated into two main components: data cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
@@ -106,7 +107,61 @@ Here, we are telling the script where important files are.
 `subj_files = 'SUBJECT_DATA_LOCATION;`
 This is the location of the raw files live (eg. `'C:/Users/mattw/Documents/Research/darpa/data/subject_data_regression/'`). They should be converted (using Jon's script) from the `.v` file and are generally named: `[subj#]_w[scan#]_[date and maybe other info]` and will have a `.img` (image) and `.hdr` (header) file. Make sure each scan has two files. Nothing else should be in the folder. For the original DARPA study, if a participant completed the entire protocol (14 scans), this folder would have 28 files and that is all. Anything else in this folder may break the script. Additionally, the script is set up to run with the data in this format. If the data is not in this format, the script may break. 
 
-`ind_contrasts_file = 'C:/Users/mattw/Documents/Research/darpa/script_files/habituation_contrasts.xlsx';`
+`ind_contrasts_file = 'LOCATION_OF_XLSX_FILE;`
+#### Setting up Individual Contrast file <a name="ind_set_up"></a>
+This is one of the main components of the individual model set-up. This is where you will specify the neutral, stress, vns-only, etc. scans. The first question you need to decide is how to analyze the data, and **how many unique components of the scanning protocol exist**.
+
+For example, the simplist representation of the PPG experiment is:
+
+```{sequence}
+Neutral -> Neutral -> Neutral -> Neutral -> Mental Stress -> Mental Stress -> Mental Stress -> Mental Stress
+```
+
+As a result, we have **2 unique components** - Neutral and Mental Stress. Keep this is mind, as it will be needed later. Since we know the unique components in the dataset, we will construct the contrast matrix for the first level (individual) analysis. The most basic version will be 2 columns and an arbitrary rows (depending on what you are interested in). For the purposes of this example, *activation = Mental Stress - Neutral* and *deactivation = Neutral - Mental Stress*.
+
+**name**|**Neutral**|**Mental Stress**
+Activation|-1|1
+Deactivation|1|-1
+
+Knowing this, we will create an excel file using the matrix for importing into MATLAB. For this **do not include column headers** - in this example, cell A1 should be 'Activation'. 
+
+What if we wanted to get a lit more complex? We know in the PPG that subjects received mental stress that was mental arithmetic and public speaking. We can add this complexity to our model using the model below.
+
+```{sequence}
+Counting -> Counting -> Neutral Speaking -> Neutral Speaking -> Mental Arith. -> Mental Arith. -> Public Speaking -> Public Speaking
+```
+
+Now we have **4 unique components** (counting, neutral speaking, mental arith., and public speaking). Our contrast table will look a little different. For this purpose, we will order our unique components in order of appearance (1 = counting, 2 = neutral speaking, 3 = mental arith., 4 = public speaking). 
+
+**name**|**Counting**|**Neutral Speaking** | **Mental Arith** | **Public Speaking**
+Activation|-1|-1|1|1
+Deactivation|1|1|-1|-1
+Public Speaking Activation|0|-1|0|1
+Public Speaking Deactivation|0|1|0|-1
+Mental Arith Activation |-1|0|1|0
+Mental Arith Deactivation |1|0|-1|0
+
+Our excel table would then have 6 columns and 5 rows (A1 = 'Activation'). We can still get the overall Activation and Deactivation in this model, but will additional detail for the type of stress. **NOTE: in PPG, the stress type was random**. In order to do this, you will need to get the order of appearance in an excel file. I'll show how to address this later. 
+
+Lastly, for VNS we had this approach:
+
+```{sequence}
+Neutral -> Neutral -> Trauma -> Trauma -> VNS -> VNS -> Neutral -> Neutral -> Trauma -> Trauma -> {lunch} -> Neutral -> Neutral -> Trauma -> Trauma
+```
+On the surface we have 3 unique components (neutral, trauma, VNS). However, there is one issue. The first trauma script **does not have VNS preceding**. Therefore, we have to discard it because it isn't like the others. We do this by specifying that we have 4 unique components. Therefore, this analysis would look like:
+
+**name**|**Neutral**|**Trauma** | **VNS**
+Trauma Activation|-1|1|0
+Trauma Deactivation|1|-1|0
+VNS Activation |0|0|1
+VNS Deactivation |0|0|-1
+
+What happened to the first trauma? I called this the 4th unique component. If you do not specify it in the model, SPM will automatically add a 0. Therefore, by giving it a value of 4, it will be ignored and essentially discarded. You could also remove the scan from the subject's individual folder. However, I like to keep everything included in the model especially with smaller sample sizes. 
+
+Lastly, we can also include a time analysis. With the non-PTSD paper, I also did a time-based analysis. For this, we ended **7** components ()
+
+
+
 
 
 
