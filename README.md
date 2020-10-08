@@ -120,6 +120,7 @@ Neutral -> Neutral -> Neutral -> Neutral -> Mental Stress -> Mental Stress -> Me
 As a result, we have **2 unique components** - Neutral and Mental Stress. Keep this is mind, as it will be needed later. Since we know the unique components in the dataset, we will construct the contrast matrix for the first level (individual) analysis. The most basic version will be 2 columns and an arbitrary rows (depending on what you are interested in). For the purposes of this example, *activation = Mental Stress - Neutral* and *deactivation = Neutral - Mental Stress*.
 
 **name**|**Neutral**|**Mental Stress**
+---|---|---
 Activation|-1|1
 Deactivation|1|-1
 
@@ -134,6 +135,7 @@ Counting -> Counting -> Neutral Speaking -> Neutral Speaking -> Mental Arith. ->
 Now we have **4 unique components** (counting, neutral speaking, mental arith., and public speaking). Our contrast table will look a little different. For this purpose, we will order our unique components in order of appearance (1 = counting, 2 = neutral speaking, 3 = mental arith., 4 = public speaking). 
 
 **name**|**Counting**|**Neutral Speaking** | **Mental Arith** | **Public Speaking**
+---|---|---|---|---
 Activation|-1|-1|1|1
 Deactivation|1|1|-1|-1
 Public Speaking Activation|0|-1|0|1
@@ -151,6 +153,7 @@ Neutral -> Neutral -> Trauma -> Trauma -> VNS -> VNS -> Neutral -> Neutral -> Tr
 On the surface we have 3 unique components (neutral, trauma, VNS). However, there is one issue. The first trauma script **does not have VNS preceding**. Therefore, we have to discard it because it isn't like the others. We do this by specifying that we have 4 unique components. Therefore, this analysis would look like:
 
 **name**|**Neutral**|**Trauma** | **VNS**
+---|---|---|---
 Trauma Activation|-1|1|0
 Trauma Deactivation|1|-1|0
 VNS Activation |0|0|1
