@@ -164,6 +164,7 @@ Lastly, we can also include a time analysis. With the non-PTSD paper, I also did
 Neutral_1 -> Neutral_1 -> Trauma_7 -> Trauma_1 -> VNS -> VNS -> Neutral_2 -> Neutral_2 -> Trauma_2 -> Trauma_2 -> {lunch} -> Neutral_3 -> Neutral_3 -> Trauma_3 -> Trauma_3
 ```
 The resulting table looked like this in excel:
+
 ![darpa_time_individual](manual_screenshots/darpa_time_individual.png)
 
 `spm_jobman('initcfg');` This insitiates the jobman in SPM. A leftover from SPM8, it can possibly be removed. However, it doesn't impact the SPM12 jobman in any way, so its just left for the time being. 
@@ -201,6 +202,8 @@ I will describe this section is pseudocode, which is a plain-text version of wha
             if pre-processing checks return either sw_ image or con_00**, print out this to console
 ```
 
+### Computing Difference Images
+The main component of this is the specification of the scan characteristics and adding to the `scan_characteristics` variable. First, we call `cat` with the first argument of 1 to concatenate by row (creating a long double vs wide) based on our scans.  
 
 
 
