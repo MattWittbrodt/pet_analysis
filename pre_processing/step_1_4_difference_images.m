@@ -1,4 +1,10 @@
-% Contrasts = matrix with the excel file contrasts
+% subject | character of subject name - in my pipelines I extracted from data folders, so it reflected name of folder
+% subject_files | path where individual subject data goes
+% scan_characteristics | A double with size n x 2, where n = number of different HR-PET scans
+% measure_name| a string with the name of stress intervention. For use in the contrast specification
+% contrasts| detailed below; individual contrast specifications
+% var | 0 or 1 - equal variance. Default runs with 1 in individual model specification; 0 will run otherwise
+% contrast_sum| a double of length n where n = number of contrasts specified. In the double is the sum of the contrasts. For examples, a contrast testing if A is greater than B would be [-1 1] for a contrast sum of 0. A contrast just looking at activation of A would be [1 0] (B is disregarded) and therefore has a contrast sum of 0.
 
 function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_characteristics, measure_name, contrasts, var, contrast_sum)
     
@@ -111,17 +117,6 @@ function matlabbatch = step_1_4_difference_images(subject, subj_files, scan_char
     % Do not delete after finishing
     matlabbatch{3}.spm.stats.con.delete = 0;
     
-%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.name = [measure_name, '_activation']; % First contrast is the activation (stress > control)
-%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.convec = [-1 1];
-%     matlabbatch{3}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
-%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.name = [measure_name, '_deactivation']; % Second is the deactivation (control > stress)
-%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.convec = [1 -1];
-%     matlabbatch{3}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
-%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.name = 'overall'; % Third is a weight average of the two (suggested via SPM Wiki)
-%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.convec = [1 1];
-%     matlabbatch{3}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
-%     matlabbatch{3}.spm.stats.con.delete = 0;
-
     % Closing Error File
     fclose(fileID);
     
