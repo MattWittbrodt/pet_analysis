@@ -4,7 +4,7 @@
 1. [General Function](#general_function)
 2. [Pre-Processing Pipeline](#pre_processing)
 3. [Example Pre-Processing Set Up](#ex_pre)
-3.1 [Individual Contrast Set Up](#ind_set_up)
+    1. [Individual Contrast Set Up](#ind_set_up)
 
 ## General function of code <a name="general_function"></a>
 The code is separated into two main components: data cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
@@ -147,9 +147,7 @@ Our excel table would then have 6 columns and 5 rows (A1 = 'Activation'). We can
 
 Lastly, for VNS we had this approach:
 
-```{sequence}
-Neutral -> Neutral -> Trauma -> Trauma -> VNS -> VNS -> Neutral -> Neutral -> Trauma -> Trauma -> {lunch} -> Neutral -> Neutral -> Trauma -> Trauma
-```
+
 On the surface we have 3 unique components (neutral, trauma, VNS). However, there is one issue. The first trauma script **does not have VNS preceding**. Therefore, we have to discard it because it isn't like the others. We do this by specifying that we have 4 unique components. Therefore, this analysis would look like:
 
 **name**|**Neutral**|**Trauma** | **VNS**
@@ -161,7 +159,14 @@ VNS Deactivation |0|0|-1
 
 What happened to the first trauma? I called this the 4th unique component. If you do not specify it in the model, SPM will automatically add a 0. Therefore, by giving it a value of 4, it will be ignored and essentially discarded. You could also remove the scan from the subject's individual folder. However, I like to keep everything included in the model especially with smaller sample sizes. 
 
-Lastly, we can also include a time analysis. With the non-PTSD paper, I also did a time-based analysis. For this, we ended **7** components ()
+Lastly, we can also include a time analysis. With the non-PTSD paper, I also did a time-based analysis. For this, **7** components were needed:
+
+```
+Neutral_1 -> Neutral_1 -> Trauma_7 -> Trauma_1 -> VNS -> VNS -> Neutral_2 -> Neutral_2 -> Trauma_2 -> Trauma_2 -> {lunch} -> Neutral_3 -> Neutral_3 -> Trauma_3 -> Trauma_3
+```
+The resulting table looked like this in excel:
+![normalize_options](manual_screenshots/darpa_time_individual.png)
+
 
 
 
