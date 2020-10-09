@@ -147,7 +147,6 @@ Our excel table would then have 6 columns and 5 rows (A1 = 'Activation'). We can
 
 Lastly, for VNS we had this approach:
 
-
 On the surface we have 3 unique components (neutral, trauma, VNS). However, there is one issue. The first trauma script **does not have VNS preceding**. Therefore, we have to discard it because it isn't like the others. We do this by specifying that we have 4 unique components. Therefore, this analysis would look like:
 
 **name**|**Neutral**|**Trauma** | **VNS**
@@ -165,7 +164,44 @@ Lastly, we can also include a time analysis. With the non-PTSD paper, I also did
 Neutral_1 -> Neutral_1 -> Trauma_7 -> Trauma_1 -> VNS -> VNS -> Neutral_2 -> Neutral_2 -> Trauma_2 -> Trauma_2 -> {lunch} -> Neutral_3 -> Neutral_3 -> Trauma_3 -> Trauma_3
 ```
 The resulting table looked like this in excel:
-![normalize_options](manual_screenshots/darpa_time_individual.png)
+![darpa_time_individual](manual_screenshots/darpa_time_individual.png)
+
+`spm_jobman('initcfg');` This insitiates the jobman in SPM. A leftover from SPM8, it can possibly be removed. However, it doesn't impact the SPM12 jobman in any way, so its just left for the time being. 
+
+### Getting list of subjects to iterate over
+This section will just loop through the subject file directory and, using the folder structure, create a list of subjects to be included. Nothing should need to be altered here. 
+
+### Routine for pre-processing
+I will describe this section is pseudocode, which is a plain-text version of what the code is doing.
+
+```for all subjects in the list created above
+    try #to avoid crashing the script - an error is returned to the 'error' array created above
+        clear jobs in jobman
+        
+        get subject number
+        print out what subject to console
+        
+        get subject directory (where files are)
+        change MATLAB to look at the subject directory
+        
+        Check if pre-processing has been done already by looking for the 'sw' files
+        Check if pre-processing has been done already by looking for a con_00**.nii image (from SPM)
+        
+        if neither pre-processing checks find anything (the variable is empty)
+            Do step_1_1 (realign and estimation)
+            run SPM Jobman for step_1_1
+            
+            locate SPM PET template image - THIS NEEDS TO BE SPECIFIED and should be in MATLAB/spm8/templates/PET.nii
+            do step_1_2 (normalizing)
+            run SPM Jobman for step_1_2
+            
+            do step_1_2 (smoothing)
+            run SPM Jobman for step_1_3
+            
+            if pre-processing checks return either sw_ image or con_00**, print out this to console
+```
+
+
 
 
 
