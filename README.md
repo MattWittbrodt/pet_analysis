@@ -107,24 +107,42 @@ Here, we are telling the script where important files are.
 `subj_files = 'SUBJECT_DATA_LOCATION;`
 This is the location of the raw files live (eg. `'C:/Users/mattw/Documents/Research/darpa/data/subject_data_regression/'`). They should be converted (using Jon's script) from the `.v` file and are generally named: `[subj#]_w[scan#]_[date and maybe other info]` and will have a `.img` (image) and `.hdr` (header) file. Make sure each scan has two files. Nothing else should be in the folder. For the original DARPA study, if a participant completed the entire protocol (14 scans), this folder would have 28 files and that is all. Anything else in this folder may break the script. Additionally, the script is set up to run with the data in this format. If the data is not in this format, the script may break. 
 
-`ind_contrasts_file = 'LOCATION_OF_XLSX_FILE;`
+```
+ind_contrasts_file = 'LOCATION_OF_XLSX_FILE';
+scan_characteristics = cat(1,'SCAN_CHARACTERISTICS_DOUBLE');
+[~,~,contrasts] = xlsread(ind_contrasts_file);
+contrast_sum = [CONTRAST_SUMS];
+```
+
 #### Setting up Individual Contrast file <a name="ind_set_up"></a>
-This is one of the main components of the individual model set-up. This is where you will specify the neutral, stress, vns-only, etc. scans. The first question you need to decide is how to analyze the data, and **how many unique components of the scanning protocol exist**.
+This is one of the main components of the individual model set-up. This is where you will specify the neutral, mental/traumatic stress, vns-only, etc. scans. The first question you need to decide is how to analyze the data, and **how many unique components of the scanning protocol exist**.
 
 For example, the simplist representation of the PPG experiment is:
 
-```{sequence}
+```
 Neutral -> Neutral -> Neutral -> Neutral -> Mental Stress -> Mental Stress -> Mental Stress -> Mental Stress
 ```
-
 As a result, we have **2 unique components** - Neutral and Mental Stress. Keep this is mind, as it will be needed later. Since we know the unique components in the dataset, we will construct the contrast matrix for the first level (individual) analysis. The most basic version will be 2 columns and an arbitrary rows (depending on what you are interested in). For the purposes of this example, *activation = Mental Stress - Neutral* and *deactivation = Neutral - Mental Stress*.
 
+**Experimental Components:**
+
+*Table*:
 **name**|**Neutral**|**Mental Stress**
 ---|---|---
 Activation|-1|1
 Deactivation|1|-1
 
 Knowing this, we will create an excel file using the matrix for importing into MATLAB. For this **do not include column headers** - in this example, cell A1 should be 'Activation'. 
+
+*Scan Characteristics Double:*
+This will specify levels for each scan to tell the script. So, you will need to create an n x 2 double using the `cat` function with `1` option (to concatenate by rows). For the current example, the code would look like this:
+
+`scan_characteristics = cat(1, [1 1], [2 1], [3 1], [4 1], [5 2], [6 2], [7 2], [8 2]);`
+
+*Contrast sums:*
+This will be a double with the length = n rows in *Table* with the sum of each row. Most of the time, this will be zero. In this example, this would be the code:
+
+`contrast_sum = [0,0];`
 
 What if we wanted to get a lit more complex? We know in the PPG that subjects received mental stress that was mental arithmetic and public speaking. We can add this complexity to our model using the model below.
 
@@ -145,7 +163,15 @@ Mental Arith Deactivation |1|0|-1|0
 
 Our excel table would then have 6 columns and 5 rows (A1 = 'Activation'). We can still get the overall Activation and Deactivation in this model, but will additional detail for the type of stress. **NOTE: in PPG, the stress type was random**. In order to do this, you will need to get the order of appearance in an excel file. I'll show how to address this later. 
 
-Lastly, for VNS we had this approach:
+*Scan Characteristics:* `cat(1, [1 1], [2 1], [3 2], [4 2], [5 3], [6 3], [7 4], [8 4])` 
+
+*Contrasts Sums:* `[0,0,0,0,0,0]`
+
+Lastly, for the DARPA study VNS we had this approach:
+
+```
+Neutral -> Neutral -> Trauma -> Trauma -> VNS -> VNS -> Neutral -> Neutral -> Trauma -> Trauma -> {lunch} -> Neutral -> Neutral -> Trauma -> Trauma
+```
 
 On the surface we have 3 unique components (neutral, trauma, VNS). However, there is one issue. The first trauma script **does not have VNS preceding**. Therefore, we have to discard it because it isn't like the others. We do this by specifying that we have 4 unique components. Therefore, this analysis would look like:
 
@@ -158,7 +184,11 @@ VNS Deactivation |0|0|-1
 
 What happened to the first trauma? I called this the 4th unique component. If you do not specify it in the model, SPM will automatically add a 0. Therefore, by giving it a value of 4, it will be ignored and essentially discarded. You could also remove the scan from the subject's individual folder. However, I like to keep everything included in the model especially with smaller sample sizes. 
 
-Lastly, we can also include a time analysis. With the non-PTSD paper, I also did a time-based analysis. For this, **7** components were needed:
+*Scan Characteristics:* `cat(1, [1 1], [2 1], [3 **4**], [4 2], [5 3], [6 3], [7 1], [8 1], [9 2], [10 2], [11 1], [12 1], [13 2], [14 2])` 
+
+*Contrasts Sums:* `[0,0,**1**,0]`
+
+Lastly, we can also include a time analysis. With the non-PTSD paper, I also did a time-based analysis. For this, **8** components were needed:
 
 ```
 Neutral_1 -> Neutral_1 -> Trauma_7 -> Trauma_1 -> VNS -> VNS -> Neutral_2 -> Neutral_2 -> Trauma_2 -> Trauma_2 -> {lunch} -> Neutral_3 -> Neutral_3 -> Trauma_3 -> Trauma_3
@@ -166,6 +196,8 @@ Neutral_1 -> Neutral_1 -> Trauma_7 -> Trauma_1 -> VNS -> VNS -> Neutral_2 -> Neu
 The resulting table looked like this in excel:
 
 ![darpa_time_individual](manual_screenshots/darpa_time_individual.png)
+
+*Scan Characteristics:* `cat(1, [1 1], [2 1], [3 8], [4 2], [5 3], [6 3], [7 4], [8 4], [9 5], [10 5], [11 6], [12 6], [13 7], [14 7])` 
 
 `spm_jobman('initcfg');` This insitiates the jobman in SPM. A leftover from SPM8, it can possibly be removed. However, it doesn't impact the SPM12 jobman in any way, so its just left for the time being. 
 
