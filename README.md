@@ -7,7 +7,8 @@
     1. [Individual Contrast Set Up](#ind_set_up)
 
 ## General function of code <a name="general_function"></a>
-The code is separated into two main components: data cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
+The code is separated into two main components: dat
+a cleaning and analysis. All scripts can be accessed natively through the MATLAB terminal by adding folder to path (assuming the folder is in your documents folder:
 ```matlab
 addpath(genpath('~/Documents/pet_analysis'));
 ```
@@ -228,16 +229,25 @@ I will describe this section is pseudocode, which is a plain-text version of wha
             do step_1_2 (normalizing)
             run SPM Jobman for step_1_2
             
-            do step_1_2 (smoothing)
+            do step_1_3 (smoothing)
             run SPM Jobman for step_1_3
             
             if pre-processing checks return either sw_ image or con_00**, print out this to console
 ```
 
 ### Computing Difference Images
-The main component of this is the specification of the scan characteristics and adding to the `scan_characteristics` variable. First, we call `cat` with the first argument of 1 to concatenate by row (creating a long double vs wide) based on our scans.  
+Since we have now put everything togeather, the final step is to call the function for computing difference images, `step_1_4`. First, this loop will check if the difference images are empty (no con_000#.nii) images. If that is empty, it will compute the difference images.
 
+```
+ difference_images = step_1_4_difference_images(subject, ...
+                                                           subj_files,...
+                                                           scan_characteristics,...
+                                                           'STRESS_OR_OTHER_DESCRIPTOR',...
+                                                           contrasts,...
+                                                            1,...
+                                                            contrast_sum);
 
+```
 
 
 
