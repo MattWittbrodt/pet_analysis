@@ -5,6 +5,7 @@
 2. [Pre-Processing Pipeline](#pre_processing)
 3. [Example Pre-Processing Set Up](#ex_pre)
     1. [Individual Contrast Set Up](#ind_set_up)
+4. [Analysis Pipline](#analysis_pipeline)
 
 ## General function of code <a name="general_function"></a>
 The code is separated into two main components: dat
@@ -236,43 +237,77 @@ I will describe this section is pseudocode, which is a plain-text version of wha
 ```
 
 ### Computing Difference Images
-Since we have now put everything togeather, the final step is to call the function for computing difference images, `step_1_4`. First, this loop will check if the difference images are empty (no con_000#.nii) images. If that is empty, it will compute the difference images.
+Since we have now put everything together, the final step is to call the function for computing difference images, `step_1_4`. First, this loop will check if the difference images are empty (no con_000#.nii) images. If that is empty, it will compute the difference images.
 
+```matlab
+difference_images = step_1_4_difference_images(subject, ...
+                                               subj_files,...
+                                               scan_characteristics,...
+                                               'STRESS_OR_OTHER_DESCRIPTOR',...
+                                               contrasts,...
+                                               1,...
+                                               contrast_sum);
 ```
- difference_images = step_1_4_difference_images(subject, ...
-                                                           subj_files,...
-                                                           scan_characteristics,...
-                                                           'STRESS_OR_OTHER_DESCRIPTOR',...
-                                                           contrasts,...
-                                                            1,...
-                                                            contrast_sum);
 
+
+
+## Analysis Pipeline <a name="analysis_pipeline"></a>
+
+The next step is to run the main second-level analysis (generally referred to as Step 2). For this, it generally works best to create a new ```.m``` file usually containing some version of `analysis` to differentiate it from the `pre-processing`. For example, in the DARPA study, the main analysis `.m` file was called, "`darpa_analysis_pipeline.m`". This section will go through that code and some of the functions contained within.
+
+**The easiest way to create a new analysis will be modifying the `analysis_pipeline_SHELL.m` file.**
+
+*Preamble* - First, just setting up some directories and file ID. 
+
+```matlab
+%% Identify subject and analysis file directory
+subject_files = 'PATH TO FOLDER WITH SUBJECT DATA THAT INCLUDES {SUBJID}/con_0001.nii FILES';
+subject_groupings = xlsread('C:/Users/.../.../.../subject_groupings.xlsx');
+
+% Getting list of subjects
+subjects = dir(subject_files);
+subjects = remove_dots(subjects); % Removing first two rows
+subjects = remove_imaging_files(subjects);
+subjects = {subjects.name}.'; %.' fills vertically
+
+% Read in contrast excel file
+[~,~,contrasts] = xlsread('C:/Users/.../.../.../contrasts_darpa.xlsx');
 ```
 
+This script uses two main files - contrasts and subject groupings - which will be necessary to complete the desired analyses. 
 
+##### Subject Grouping File
 
+The subject grouping file identifies each subject and what groups they belong to for the second level analyses. For example, in the DARPA study, an easy structure was PTSD vs non-PTSD and sham vs. VNS. The general structure of the file is each subject has a row with the columns depicting the groups as demonstrated below:
 
+| subject | PTSD | sham |
+| ------- | ---- | ---- |
+| 1       | 1    | 1    |
+| 2       | 1    | 2    |
+| 3       | 2    | 2    |
+| 4       | 2    | 1    |
 
+*Note*: the numbers are arbitrary, but MATLAB does not play friendly with 0's and 1's (which are generally used for binary). I like to generally follow the idea of the number coding being essentially 1 = no, 2 = yes (essentially coding as [0,1] binary but +1). 
 
-###  Specific functions/scripts within each folder
+##### Contrasts File
 
+This contrast file is essentially the same as the one from [Step 1](#ind_set_up), so much of the underlying detail will be omitted here. The one fix here is that you can have *n* number of factors, so the order of presentation requires attention. The number of columns in the excel file is equivalent to: *f(x) = 1 + L1 * L2 * L3 ... Ln* where L = the number of levels for each *n* factor.  Therefore, if you have two factors, one with 2 levels (e.g., PTSD vs non-PTSD) and another with 3 levels (e.g., rest, stimulation, trauma) you will need 7 columns (1 for name, 2x3 for contrasts). Therefore, each of the 6 data columns will be a unique combination of factor levels.  
 
+The order will also follow a general pattern which also dictates the contrast. A nice diagram of these (along with more examples) can be found in the [Glascher and Gitelman paper](https://www.researchgate.net/publication/267779738_Contrast_weights_in_flexible_factorial_design_with_multiple_groups_of_subjects). In short, the order will permutate each level of the second factor over the first. If we have the same levels as stated above, let PTSD = A1, non-PTSD = A2, Rest = B1, Stimulation = B2, Trauma = B3. The order of appearance is then: A1B1 | A1B2 | A1B3 | A2B1 | A2B2 | A2B3. However, in general it is best to double check this in the `.SPM` file at the location: `>> SPM.xX.name`. 
 
+Quick Example (not exhaustive table, just representative): 2 (PTSD, non PTSD) x 2 (rest, trauma)
 
+|                                 | PTSD,Sham | PTSD,Active | Non-PTSD,Sham | Non-PTSD,Active |
+| ------------------------------- | --------- | ----------- | ------------- | --------------- |
+| sham > active                   | 1         | -1          | 1             | -1              |
+| active > sham                   | -1        | 1           | -1            | 1               |
+| non_PTSD_active > non_PTSD_sham | 0         | 0           | -1            | 1               |
+| PTSD_active > PTSD_sham         | -1        | 1           | 0             | 0               |
+|                                 |           |             |               |                 |
 
+#### Covariates
 
-
-
-
-
-
-
-
-
-
-
-
-
+In the analytical pipeline there is also a way to include a number of covariates.
 
 
 
