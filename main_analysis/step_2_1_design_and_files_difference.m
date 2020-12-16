@@ -26,9 +26,14 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
        
     for ii = 1:length(subject_groupings)
        
-       
-       s = num2str(subject_groupings(ii));
- 
+       if isnumeric(subject_groupings(ii))
+          s = num2str(subject_groupings(ii));
+       elseif iscell(subject_groupings(ii))
+          s = cell2char(subject_groupings(ii));
+       else
+          s = subject_groupings(ii);
+       end
+           
        % Check if subject in grouping data has PET data. If not, skip
        check_if_subject = find(strcmp(subjects, s), 1);
        
@@ -42,12 +47,16 @@ function matlabbatch = step_2_1_design_and_files_difference(subjects,subject_gro
     subject_groupings(rows_to_delete,:) = [];
     
     % Processing factors- if min = 0, SPM will have an error
-    [~,ncol] = size(subject_groupings);
-    for c = 1:ncol
-        if min(subject_groupings(:,c)) == 0
-           subject_groupings(:,c) = subject_groupings(:,c) + 1;
-        end
-    end
+    % This assumes subject is in 1st column
+%     [~,ncol] = size(subject_groupings);
+%     for c = 2:ncol
+%         
+%         % Checking on min, if it is 0, adding 1
+%         if min(subject_groupings(:,c)) == 0
+%             subject_groupings(:,c) = subject_groupings(:,c) + 1;
+%         end
+%         
+%     end
     
     %% Second - looping over analysis_type (activation, deactivation, etc)
     % Building large array with subject names and the factors
