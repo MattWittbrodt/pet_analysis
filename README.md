@@ -255,9 +255,9 @@ difference_images = step_1_4_difference_images(subject, ...
 
 The next step is to run the main second-level analysis (generally referred to as Step 2). For this, it generally works best to create a new ```.m``` file usually containing some version of `analysis` to differentiate it from the `pre-processing`. For example, in the DARPA study, the main analysis `.m` file was called, "`darpa_analysis_pipeline.m`". This section will go through that code and some of the functions contained within.
 
-**The easiest way to create a new analysis will be modifying the `analysis_pipeline_SHELL.m` file.**
+### The easiest way to create a new analysis will be modifying the `analysis_pipeline_SHELL.m` file.
 
-*Preamble* - First, just setting up some directories and file ID. 
+#### *Preamble* - First, just setting up some directories and file ID. 
 
 ```matlab
 %% Identify subject and analysis file directory
@@ -274,11 +274,11 @@ subjects = {subjects.name}.'; %.' fills vertically
 [~,~,contrasts] = xlsread('C:/Users/.../.../.../contrasts_darpa.xlsx');
 ```
 
-This script uses two main files - contrasts and subject groupings - which will be necessary to complete the desired analyses. 
+This script uses two main external files - contrasts and subject groupings - which will be necessary to complete the desired analyses. 
 
-##### Subject Grouping File
+##### 1. Subject Grouping File
 
-The subject grouping file identifies each subject and what groups they belong to for the second level analyses. For example, in the DARPA study, an easy structure was PTSD vs non-PTSD and sham vs. VNS. The general structure of the file is each subject has a row with the columns depicting the groups as demonstrated below:
+The subject grouping file identifies each subject and what groups they belong to for the second level analyses. For example, in the DARPA study, an easy structure was PTSD vs non-PTSD and sham vs. VNS. The general structure of the file is: each subject's information is contained within one row with each column containing information for each group as demonstrated below:
 
 | subject | PTSD | sham |
 | ------- | ---- | ---- |
@@ -289,9 +289,9 @@ The subject grouping file identifies each subject and what groups they belong to
 
 *Note*: the numbers are arbitrary, but MATLAB does not play friendly with 0's and 1's (which are generally used for binary). I like to generally follow the idea of the number coding being essentially 1 = no, 2 = yes (essentially coding as [0,1] binary but +1). 
 
-##### Contrasts File
+##### 2. Contrasts File
 
-This contrast file is essentially the same as the one from [Step 1](#ind_set_up), so much of the underlying detail will be omitted here. The one fix here is that you can have *n* number of factors, so the order of presentation requires attention. The number of columns in the excel file is equivalent to: *f(x) = 1 + L1 * L2 * L3 ... Ln* where L = the number of levels for each *n* factor.  Therefore, if you have two factors, one with 2 levels (e.g., PTSD vs non-PTSD) and another with 3 levels (e.g., rest, stimulation, trauma) you will need 7 columns (1 for name, 2x3 for contrasts). Therefore, each of the 6 data columns will be a unique combination of factor levels.  
+This contrast file is essentially the same as the one from [Step 1](#ind_set_up), so much of the underlying detail will be omitted here. The one fix here is that you can have *n* number of factors, so the order of presentation requires attention. The number of columns in the excel file is equivalent to: *f(x)* = *1 + L1* * *L2* * *L3*...*Ln* where L = the number of levels for each *n* factor.  Therefore, if you have two factors, one with 2 levels (e.g., PTSD vs non-PTSD) and another with 3 levels (e.g., rest, stimulation, trauma) you will need 7 columns (1 for name, 2x3 for contrasts). Therefore, each of the 6 data columns will be a unique combination of factor levels.  
 
 The order will also follow a general pattern which also dictates the contrast. A nice diagram of these (along with more examples) can be found in the [Glascher and Gitelman paper](https://www.researchgate.net/publication/267779738_Contrast_weights_in_flexible_factorial_design_with_multiple_groups_of_subjects). In short, the order will permutate each level of the second factor over the first. If we have the same levels as stated above, let PTSD = A1, non-PTSD = A2, Rest = B1, Stimulation = B2, Trauma = B3. The order of appearance is then: A1B1 | A1B2 | A1B3 | A2B1 | A2B2 | A2B3. However, in general it is best to double check this in the `.SPM` file at the location: `>> SPM.xX.name`. 
 
@@ -303,16 +303,63 @@ Quick Example (not exhaustive table, just representative): 2 (PTSD, non PTSD) x 
 | active > sham                   | -1        | 1           | -1            | 1               |
 | non_PTSD_active > non_PTSD_sham | 0         | 0           | -1            | 1               |
 | PTSD_active > PTSD_sham         | -1        | 1           | 0             | 0               |
-|                                 |           |             |               |                 |
 
 #### Covariates
 
-In the analytical pipeline there is also a way to include a number of covariates.
+If you want to include covariates, there is a third file that is needed to enable the analytical pipeline to employ within the analysis. Note, you could amend the script to load in with the first subjects grouping file, but because data was coming from different places, I decided to keep the files separate. This file is set up similarly, with each subject data being in one row and data in each column. Also, you **do not** need to crop this file to fit exactly what you want. In the code itself you can specify which columns are the covariates of interest.
+
+For example, this is a brief part of a recent file:
+
+| caps_index | biol_sex | bmi  | age  | marital_status |
+| ---------- | -------- | ---- | ---- | -------------- |
+| 101        | 2        | 19.7 | 27.3 | 1              |
+| 102        | 2        | 21.6 | 21.6 | 1              |
+| 103        | 2        | 20.8 | 24.8 | 1              |
+| 104        | 2        | 23.3 | 28.0 | 2              |
+
+Here is the code for this section:
+
+```matlab
+%% Adding covariates
+% For ex: Columns of interest- 3 (gender), 18 (age)
+covariate_data = xlsread('C:/.../.../{file_name}.xlsx');
+covariate_data = covariate_data(:,[1,3,18]); % takes the whole file and returns 3 columns - 1 (subject ID), 3 (gender), 18 (age)
+[nrow,ncol] = size(covariate_data); # gets size of data
+[~,grouping_factors] = size(subject_groupings); % returning the number of factors
+
+% Looping over and adding to subject_groupings
+for s = 1:length(covariate_data)
+    sub = covariate_data(s,1);
+    
+    % Getting row in subject grouping file
+    row = find(subject_groupings == sub,1);
+    
+    % Adding data from covariates to subject_groupings
+    for cc = 2:ncol
+        cov = covariate_data(s,cc);
+        %-1 because we are starting to count at 2, +cc for the count
+        subject_groupings(row,(grouping_factors-1+cc)) = cov;
+    end
+    
+end
+    
+% Adding names - you will want to change both the names and length (if you have > 2)
+cov_names = {'sex','age'};
+
+```
+
+
+
+
+
+
+
 
 
 
 
 ## Utilities
+
 ```dir to list```: Takes in a directory (data_dir) and will output a list of all the directories in that list. Useful for getting individual subject lists from folders in a directory. Output can take a couple of formats depending on what is needed.
 
 

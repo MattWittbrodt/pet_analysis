@@ -23,10 +23,10 @@ subjects = {subjects.name}.'; %.' fills vertically
 
 %% Adding covariates
 % Columns of interest- 3 (gender), 18 (age)
-covariate_data = xlsread('C:/Users/mattw/Documents/Research/darpa/script_files/pet_subject_demographics.xlsx');
-covariate_data = covariate_data(:,[1,3,18]);
-[nrow,ncol] = size(covariate_data);
-[~,grouping_factors] = size(subject_groupings);
+covariate_data = xlsread('C:/.../.../{file_name}.xlsx');
+covariate_data = covariate_data(:,[1,3,18]); % takes the whole file and returns 3 columns - 1 (subject ID), 3 (gender), 18 (age)
+[nrow,ncol] = size(covariate_data); % getting size of data
+[~,grouping_factors] = size(subject_groupings); % returning the number of factors
 
 % Looping over and adding to subject_groupings
 for s = 1:length(covariate_data)
