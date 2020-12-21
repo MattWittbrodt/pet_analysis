@@ -310,12 +310,12 @@ If you want to include covariates, there is a third file that is needed to enabl
 
 For example, this is a brief part of a recent file:
 
-| caps_index | biol_sex | bmi  | age  | marital_status |
-| ---------- | -------- | ---- | ---- | -------------- |
-| 101        | 2        | 19.7 | 27.3 | 1              |
-| 102        | 2        | 21.6 | 21.6 | 1              |
-| 103        | 2        | 20.8 | 24.8 | 1              |
-| 104        | 2        | 23.3 | 28.0 | 2              |
+| caps_index | sex  | bmi  | age  | marital_status |
+| ---------- | ---- | ---- | ---- | -------------- |
+| 101        | 2    | 19.7 | 27.3 | 1              |
+| 102        | 2    | 21.6 | 21.6 | 1              |
+| 103        | 2    | 20.8 | 24.8 | 1              |
+| 104        | 2    | 23.3 | 28.0 | 2              |
 
 Here is the code for this section:
 
@@ -355,25 +355,35 @@ First, specify the "runs" you want to do.  For example, this could be {"activati
 
 ```matlab
 %% Looping over activation, deactivation, VNS
-runs = {'RUN1_NAME', 'RUN2_NAME', 'RUN2_NAME'};
+runs = {'RUN1_NAME', 'RUN2_NAME', 'RUN3_NAME'};
 
 for run = 1:length(runs)
 ```
 
-2. This block of code will tell the script which contrast file corresponds to each image.
+2. This block of code will tell the script which contrast file corresponds to each image (e.g., con_0001.nii, con_0002.nii). In the example below, the RUN1_NAME corresponds to the con_0001.nii files, RUN2_NAME con_0001.nii, and the RUN3_NAME corresponds to con_0003.nii. 
 
 ```matlab
-% brain activity type
+    % brain activity type
     analysis_type = cell2char(runs(run));
-    
+
     % Getting subject images
-    if strcmp(analysis_type,'activation')
-        subj_images = 1;
-    elseif strcmp(analysis_type,'deactivation')
-        subj_images = 2;
-    else
-        subj_images = 3;
-    end
+        if strcmp(analysis_type,'RUN1_NAME')
+            subj_images = 1;
+        elseif strcmp(analysis_type,'RUN2_NAME')
+            subj_images = 2;
+        else
+            subj_images = 3;
+        end
+```
+
+3. Before running the analysis, the script needs some more information about all the files specified above. The scans_as_factors flag is there if the analysis has a time dependency. For example, if you are doing a TIME_1 vs. TIME_2 analysis, the activation would still be con_0001.nii. Therefore, you need to create a factor of TIME, which is automatically done by making scans_as_factors = 1.
+
+```matlab
+	%% Step 1: Setting up Research Design
+    clear jobs
+    factors = {'FACTOR1_NAME','FACTOR2_NAME'};
+    covariates = [COV1_COL_NUMBER, COV2_COL_NUMBER]; % need a number for every covariate
+    scans_as_factors = 0;
 ```
 
 

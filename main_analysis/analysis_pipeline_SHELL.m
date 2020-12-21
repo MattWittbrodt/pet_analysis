@@ -66,9 +66,8 @@ for run = 1:length(runs)
     
     %% Step 1: Setting up Research Design
     clear jobs
-    factors = {'ptsd','sham'};
-    covariates = [4,5];
-    covariate_names = cov_names;
+    factors = {'FACTOR1_NAME','FACTOR2_NAME'};
+    covariates = [COV1_COL_NUMBER,COV2_COL_NUMBER]; % need a number for every covariate
     scans_as_factors = 0;
 
     tic
@@ -79,7 +78,7 @@ for run = 1:length(runs)
                                                   factors,...
                                                   subj_images,...
                                                   covariates,...
-                                                  covariate_names,...
+                                                  cov_names,...
                                                   scans_as_factors);
     toc
     spm_jobman('run', design)
