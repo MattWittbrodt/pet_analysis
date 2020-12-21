@@ -109,7 +109,7 @@ Here, we are telling the script where important files are.
 `subj_files = 'SUBJECT_DATA_LOCATION;`
 This is the location of the raw files live (eg. `'C:/Users/mattw/Documents/Research/darpa/data/subject_data_regression/'`). They should be converted (using Jon's script) from the `.v` file and are generally named: `[subj#]_w[scan#]_[date and maybe other info]` and will have a `.img` (image) and `.hdr` (header) file. Make sure each scan has two files. Nothing else should be in the folder. For the original DARPA study, if a participant completed the entire protocol (14 scans), this folder would have 28 files and that is all. Anything else in this folder may break the script. Additionally, the script is set up to run with the data in this format. If the data is not in this format, the script may break. 
 
-```
+```matlab
 ind_contrasts_file = 'LOCATION_OF_XLSX_FILE';
 scan_characteristics = cat(1,'SCAN_CHARACTERISTICS_DOUBLE');
 [~,~,contrasts] = xlsread(ind_contrasts_file);
@@ -345,12 +345,36 @@ end
     
 % Adding names - you will want to change both the names and length (if you have > 2)
 cov_names = {'sex','age'};
-
 ```
 
+#### Running over analysis
 
+First, specify the "runs" you want to do.  For example, this could be {"activation", "deactivation", "vns"}. Typically, these runs correspond to a contrast from the individual-level pre-processing above. Remember, the pre-processing script creates individual contrast images (e.g., con_0001.nii). These images files will be used in the analysis. In general, this section of the code will essentially loop through each run and execute a separate analysis run. 
 
+1. First, name each run. Then the for loop is started
 
+```matlab
+%% Looping over activation, deactivation, VNS
+runs = {'RUN1_NAME', 'RUN2_NAME', 'RUN2_NAME'};
+
+for run = 1:length(runs)
+```
+
+2. This block of code will tell the script which contrast file corresponds to each image.
+
+```matlab
+% brain activity type
+    analysis_type = cell2char(runs(run));
+    
+    % Getting subject images
+    if strcmp(analysis_type,'activation')
+        subj_images = 1;
+    elseif strcmp(analysis_type,'deactivation')
+        subj_images = 2;
+    else
+        subj_images = 3;
+    end
+```
 
 
 

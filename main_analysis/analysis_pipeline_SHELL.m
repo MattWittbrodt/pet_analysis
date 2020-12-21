@@ -45,10 +45,10 @@ for s = 1:length(covariate_data)
 end
     
 % Adding names
-cov_names = {'sex','age'};
+cov_names = {'COV1_NAME','COV2_NAME'};
 
 %% Looping over activation, deactivation, VNS
-runs = {'activation', 'deactivation', 'vns'}; 
+runs = {'RUN1_NAME', 'RUN2_NAME', 'RUN2_NAME'}; 
 
 for run = 1:length(runs)
     
