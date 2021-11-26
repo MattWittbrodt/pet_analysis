@@ -386,9 +386,35 @@ for run = 1:length(runs)
     scans_as_factors = 0;
 ```
 
+4. The next step is to run the main analysis set up function (`step_2_1_design_and_files_difference`) using the variables specified in the script above. Again, the `spm_jobman` will run the SPM-specific module. 
 
+```matlab
+    tic
+    design = step_2_1_design_and_files_difference(subjects,...
+                                                  subject_groupings,...
+                                                  subject_files,...
+                                                  analysis_type,...
+                                                  factors,...
+                                                  subj_images,...
+                                                  covariates,...
+                                                  cov_names,...
+                                                  scans_as_factors);
+    toc
+    spm_jobman('run', design)
+```
 
+For brevity, detail for `step_2_1_design_and_files_difference` won't be presented here, as it uses many of the code components described above. Detail about how the actual function works can be found on the github page for the file (you may need access): [here](https://github.com/MattWittbrodt/pet_analysis/blob/master/main_analysis/step_2_1_design_and_files_difference.m).
 
+6. Next, the script will automatically complete the model and contrast estimation steps using the function `step_2_2_estimation_contrasts_darpa`: 
+
+```matlab
+%% Step 2: Estimation and Contrasts 
+clear jobs
+study_contrasts = step_2_2_estimation_contrasts_darpa(subject_files, contrasts, analysis_type);
+spm_jobman('run', study_contrasts)
+```
+
+This will create the output SPM.mat file to be run.
 
 
 
